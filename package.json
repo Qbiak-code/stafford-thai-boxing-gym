@@ -17,11 +17,24 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@aws-amplify/api-rest": "^4.1.6",
+    "@aws-amplify/auth": "^6.13.1",
+    "@aws-amplify/ui-vue": "^4.3.3",
+    "@mdi/font": "^7.4.47",
+    "@schedule-x/ical": "^2.34.0",
+    "@schedule-x/theme-default": "^2.34.0",
+    "@schedule-x/vue": "^2.32.0",
+    "aws-amplify": "^6.15.1",
+    "axios": "^1.9.0",
+    "gsap": "^3.12.5",
     "pinia": "^3.0.1",
+    "vite-plugin-vuetify": "^2.1.1",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "vuetify": "^3.8.10"
   },
   "devDependencies": {
+    "@stripe/stripe-js": "^7.3.1",
     "@tsconfig/node22": "^22.0.1",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^22.14.0",
