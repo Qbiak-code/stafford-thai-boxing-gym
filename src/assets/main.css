@@ -1,46 +1,83 @@
-/* Import a nice font from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&family=Teko:wght@400;700&display=swap');
+/* Import fonts */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&family=Teko:wght@400;700&display=swap");
 
-/* Global Styles */
-.v-application {
-  font-family: 'Roboto', sans-serif;
+@import "tailwindcss";
+
+/* Global font styles */
+body {
+  font-family: "Roboto", sans-serif;
 }
 
-h1, h2, h3, h4, .v-toolbar-title {
-  font-family: 'Teko', sans-serif;
+h1,
+h2,
+h3,
+h4,
+.toolbar-title {
+  font-family: "Teko", sans-serif;
   text-transform: uppercase;
   letter-spacing: 1.5px;
 }
 
-:root {
-  --sx-color-primary: #6750a4;
-  --sx-color-on-primary: #fff;
-  --sx-color-primary-container: #eaddff;
-  --sx-color-on-primary-container: #21005e;
-  --sx-color-secondary: #625b71;
-  --sx-color-on-secondary: #fff;
-  --sx-color-secondary-container: #e8def8;
-  --sx-color-on-secondary-container: #1e192b;
-  --sx-color-tertiary: #7d5260;
-  --sx-color-on-tertiary: #fff;
-  --sx-color-tertiary-container: #ffd8e4;
-  --sx-color-on-tertiary-container: #370b1e;
-  --sx-color-surface: #fef7ff;
-  --sx-color-surface-dim: #ded8e1;
-  --sx-color-surface-bright: #fef7ff;
-  --sx-color-on-surface: #1c1b1f;
-  --sx-color-surface-container: #f3edf7;
-  --sx-color-surface-container-low: #f7f2fa;
-  --sx-color-surface-container-high: #ece6f0;
-  --sx-color-background: #fff;
-  --sx-color-on-background: #1c1b1f;
-  --sx-color-outline: #79747e;
-  --sx-color-outline-variant: #c4c7c5;
-  --sx-color-shadow: #000;
-  --sx-color-surface-tint: #6750a4;
-  --sx-color-neutral: var(--sx-color-outline);
-  --sx-color-neutral-variant: var(--sx-color-outline-variant);
-  --sx-internal-color-gray-ripple-background: #e0e0e0;
-  --sx-internal-color-light-gray: #fafafa;
-  --sx-internal-color-text: #000;
+/* SIMPLE DARK MODE - Override everything */
+.dark {
+  background-color: #1e2939;
+  color: #f3f4f6;
+}
+
+.dark * {
+  background-color: inherit;
+  color: inherit;
+  border-color: #333333;
+}
+
+.dark header,
+.dark nav,
+.dark main,
+.dark footer,
+.dark div,
+.dark section {
+  background-color: #1e2939;
+  color: #f3f4f6;
+}
+
+.dark input,
+.dark textarea,
+.dark button:not(.bg-blue-600) {
+  background-color: #1a1a1a;
+  color: #f3f4f6;
+  border-color: #333333;
+}
+
+.dark .bg-blue-600,
+.dark .bg-blue-700 {
+  background-color: #1d4ed8;
+  color: #f3f4f6;
+}
+
+.dark img {
+  opacity: 0.9;
+}
+
+/* Navigation links */
+.nav-link {
+  transition: color 0.2s ease;
+}
+
+.dark .nav-link {
+  color: #f3f4f6;
+}
+
+.nav-link:hover {
+  color: #60a5fa;
+}
+
+.nav-link.router-link-active {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+/* Shadows in dark mode */
+.dark .shadow-lg,
+.dark .shadow-md {
+  box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1);
 }

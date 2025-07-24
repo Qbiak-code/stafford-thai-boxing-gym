@@ -43,7 +43,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary" :disabled="savingProfile">
-          {{ savingProfile ? 'Saving...' : 'Save Profile' }}
+          {{ savingProfile ? "Saving..." : "Save Profile" }}
         </button>
       </form>
 
@@ -53,26 +53,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { getCurrentUser, signOut, fetchUserAttributes, type AuthUser } from 'aws-amplify/auth'
-import { get, put } from 'aws-amplify/api'
-import { useRouter } from 'vue-router'
+import { ref, reactive, onMounted } from "vue"
+import { getCurrentUser, signOut, fetchUserAttributes, type AuthUser } from "aws-amplify/auth"
+import { get, put } from "aws-amplify/api"
+import { useRouter } from "vue-router"
 
 // Define an interface for your member profile data
 interface MemberProfileData {
-  userId: string;
-  name: string;
-  email: string;
-  contactNumber: string | null;
-  emergencyContactName: string | null;
-  emergencyContactNumber: string | null;
-  medicalConditions: string | null;
-  allergies: string | null;
+  userId: string
+  name: string
+  email: string
+  contactNumber: string | null
+  emergencyContactName: string | null
+  emergencyContactNumber: string | null
+  medicalConditions: string | null
+  allergies: string | null
 }
 
 // Reactive state
 const user = ref<AuthUser | null>(null)
-const userName = ref<string>('')
+const userName = ref<string>("")
 const loadingUser = ref(true)
 const loadingProfile = ref(true)
 const savingProfile = ref(false)
@@ -81,9 +81,9 @@ const successMessage = ref<string | null>(null)
 
 // Initialize profile with default values matching the interface
 const profile: MemberProfileData = reactive({
-  userId: '',
-  name: '',
-  email: '',
+  userId: "",
+  name: "",
+  email: "",
   contactNumber: null,
   emergencyContactName: null,
   emergencyContactNumber: null,
@@ -102,21 +102,21 @@ const fetchUser = async () => {
     userName.value = cognitoUser.username || cognitoUser.userId // AuthUser has username and userId directly
 
     // Get attributes separately using fetchUserAttributes()
-    const attributes = await fetchUserAttributes() as Record<string, string>; // Cast to Record<string, string>
+    const attributes = (await fetchUserAttributes()) as Record<string, string> // Cast to Record<string, string>
 
     profile.userId = cognitoUser.userId // Set userId from AuthUser
-    profile.email = attributes.email || ''; // Access email from attributes fetched explicitly
+    profile.email = attributes.email || "" // Access email from attributes fetched explicitly
 
     await fetchMemberProfile()
   } catch (e: unknown) {
     if (e instanceof Error) {
-      console.error('Error fetching user or attributes:', e)
-      error.value = 'Failed to load user information. Please sign in again. ' + e.message
+      console.error("Error fetching user or attributes:", e)
+      error.value = "Failed to load user information. Please sign in again. " + e.message
     } else {
-      console.error('Unknown error fetching user:', e)
-      error.value = 'An unknown error occurred loading user information.'
+      console.error("Unknown error fetching user:", e)
+      error.value = "An unknown error occurred loading user information."
     }
-    router.push('/member')
+    router.push("/member")
   } finally {
     loadingUser.value = false
   }
@@ -127,53 +127,53 @@ const fetchMemberProfile = async () => {
   loadingProfile.value = true
   error.value = null
   try {
-    const client = get({ apiName: 'memberProfile', path: `/${profile.userId}` })
+    const client = get({ apiName: "memberProfile", path: `/${profile.userId}` })
     const apiResponse = await client.response
 
     if (apiResponse.statusCode === 200) {
-      const data: MemberProfileData | { message?: string } = await apiResponse.body.json(); // Union type for possible message in 200 response
+      const data: MemberProfileData | { message?: string } = await apiResponse.body.json() // Union type for possible message in 200 response
 
       // Check if it's a success message or actual profile data
-      if ('message' in data && typeof data.message === 'string') {
+      if ("message" in data && typeof data.message === "string") {
         // This case indicates a non-profile-data 200 OK, like from a PUT
         // But for GET, we expect profile data, so handle accordingly
-        console.warn('Unexpected message in GET profile response:', data.message);
+        console.warn("Unexpected message in GET profile response:", data.message)
       } else {
         // Assume it's profile data
-        profile.name = (data as MemberProfileData).name || '';
-        profile.contactNumber = (data as MemberProfileData).contactNumber || null;
-        profile.emergencyContactName = (data as MemberProfileData).emergencyContactName || null;
-        profile.emergencyContactNumber = (data as MemberProfileData).emergencyContactNumber || null;
-        profile.medicalConditions = (data as MemberProfileData).medicalConditions || null;
-        profile.allergies = (data as MemberProfileData).allergies || null;
+        profile.name = (data as MemberProfileData).name || ""
+        profile.contactNumber = (data as MemberProfileData).contactNumber || null
+        profile.emergencyContactName = (data as MemberProfileData).emergencyContactName || null
+        profile.emergencyContactNumber = (data as MemberProfileData).emergencyContactNumber || null
+        profile.medicalConditions = (data as MemberProfileData).medicalConditions || null
+        profile.allergies = (data as MemberProfileData).allergies || null
       }
     } else if (apiResponse.statusCode === 404) {
-      console.log('Member profile not found, will create on save.')
+      console.log("Member profile not found, will create on save.")
       // Pre-populate name if available from attributes
       // Access attributes from `fetchUserAttributes()` if needed, not user.value.attributes
-      const currentAttributes = await fetchUserAttributes();
+      const currentAttributes = await fetchUserAttributes()
       if (currentAttributes.name) {
-        profile.name = currentAttributes.name;
+        profile.name = currentAttributes.name
       }
     } else {
-      let errorMessage = 'Failed to fetch profile with unexpected status.'
+      let errorMessage = "Failed to fetch profile with unexpected status."
       try {
         const errorData: { message?: string } | null = await apiResponse.body.json()
-        if (errorData && typeof errorData.message === 'string') {
+        if (errorData && typeof errorData.message === "string") {
           errorMessage = errorData.message
         }
       } catch (jsonError) {
-        console.warn('Could not parse error JSON from API response:', jsonError)
+        console.warn("Could not parse error JSON from API response:", jsonError)
       }
       throw new Error(errorMessage)
     }
   } catch (e: unknown) {
     if (e instanceof Error) {
-      console.error('Error fetching member profile:', e)
-      error.value = e.message || 'Failed to load profile. Please try again.'
+      console.error("Error fetching member profile:", e)
+      error.value = e.message || "Failed to load profile. Please try again."
     } else {
-      console.error('Unknown error fetching member profile:', e)
-      error.value = 'An unknown error occurred loading profile.'
+      console.error("Unknown error fetching member profile:", e)
+      error.value = "An unknown error occurred loading profile."
     }
   } finally {
     loadingProfile.value = false
@@ -187,7 +187,7 @@ const saveProfile = async () => {
   successMessage.value = null
   try {
     const client = put({
-      apiName: 'memberProfile',
+      apiName: "memberProfile",
       path: `/${profile.userId}`,
       options: {
         body: profile as Record<string, unknown>,
@@ -197,26 +197,26 @@ const saveProfile = async () => {
 
     if (response.statusCode === 200) {
       const data: { message?: string } = await response.body.json()
-      successMessage.value = data.message || 'Profile saved successfully!'
+      successMessage.value = data.message || "Profile saved successfully!"
     } else {
-      let errorMessage = 'Failed to save profile with unexpected status.'
+      let errorMessage = "Failed to save profile with unexpected status."
       try {
         const errorData: { message?: string } | null = await response.body.json()
-        if (errorData && typeof errorData.message === 'string') {
+        if (errorData && typeof errorData.message === "string") {
           errorMessage = errorData.message
         }
       } catch (jsonError) {
-        console.warn('Could not parse error JSON from API response:', jsonError)
+        console.warn("Could not parse error JSON from API response:", jsonError)
       }
       throw new Error(errorMessage)
     }
   } catch (e: unknown) {
     if (e instanceof Error) {
-      console.error('Error saving profile:', e)
-      error.value = e.message || 'Failed to save profile. Please try again.'
+      console.error("Error saving profile:", e)
+      error.value = e.message || "Failed to save profile. Please try again."
     } else {
-      console.error('Unknown error saving profile:', e)
-      error.value = 'An unknown error occurred saving profile.'
+      console.error("Unknown error saving profile:", e)
+      error.value = "An unknown error occurred saving profile."
     }
   } finally {
     savingProfile.value = false
@@ -228,12 +228,12 @@ const saveProfile = async () => {
 const signOutUser = async () => {
   try {
     await signOut()
-    router.push('/member')
+    router.push("/member")
   } catch (e: unknown) {
     if (e instanceof Error) {
-      console.error('Error signing out:', e)
+      console.error("Error signing out:", e)
     } else {
-      console.error('Unknown error signing out:', e)
+      console.error("Unknown error signing out:", e)
     }
   }
 }

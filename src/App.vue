@@ -1,20 +1,20 @@
 <template>
-  <v-app>
+  <div class="min-h-screen flex flex-col transition-colors duration-200">
     <AppHeader />
-    <v-main>
+    <main class="flex-1">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
           <component :is="Component" />
         </transition>
       </router-view>
-    </v-main>
+    </main>
     <AppFooter />
-  </v-app>
+  </div>
 </template>
 
 <script setup lang="ts">
-import AppHeader from '@/components/AppHeader.vue'
-import AppFooter from '@/components/AppFooter.vue'
+import AppHeader from "@/components/AppHeader.vue"
+import AppFooter from "@/components/AppFooter.vue"
 </script>
 
 <style>

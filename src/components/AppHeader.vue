@@ -1,52 +1,132 @@
 <template>
-  <v-app-bar app color="surface" elevation="2">
-    <v-container class="d-flex align-center">
-      <router-link to="/" class="d-flex align-center text-decoration-none">
-        <v-toolbar-title class="font-weight-bold text-white">
-          Stafford Thai Boxing Gym
-        </v-toolbar-title>
+  <header class="bg-gray-200  shadow-md sticky top-0 z-50 transition-colors duration-200">
+    <div class="container mx-auto px-4 flex items-center justify-between h-16">
+      <router-link to="/" class="flex items-center no-underline">
+        <h1 class="toolbar-title font-bold text-xl">Stafford Thai Boxing Gym</h1>
       </router-link>
 
-      <v-spacer></v-spacer>
-
-      <div class="d-none d-md-flex">
-        <v-btn v-for="item in navItems" :key="item.title" :to="item.to" class="mx-1" variant="text">
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center space-x-4">
+        <router-link
+          v-for="item in navItems"
+          :key="item.title"
+          :to="item.to"
+          class="nav-link px-3 py-2 font-medium"
+        >
           {{ item.title }}
-        </v-btn>
-      </div>
+        </router-link>
 
-      <v-btn color="secondary" to="/contact" class="ml-4 d-none d-md-flex">
-        Join Now
-      </v-btn>
+        <!-- Dark Mode Toggle -->
+        <button
+          @click="toggleDarkMode"
+          class="p-2 rounded-lg transition-colors duration-200"
+          :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+        >
+          <!-- Sun icon for light mode -->
+          <svg v-if="isDark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+            ></path>
+          </svg>
+          <!-- Moon icon for dark mode -->
+          <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+            ></path>
+          </svg>
+        </button>
 
-      <v-app-bar-nav-icon class="d-md-none" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-    </v-container>
-  </v-app-bar>
+        <router-link
+          to="/contact"
+          class="ml-4 px-4 py-2 bg-blue-600 text-white rounded-md transition-colors duration-200"
+        >
+          Join Now
+        </router-link>
+      </nav>
 
-  <v-navigation-drawer v-model="drawer" temporary :location="$vuetify.display.mobile ? 'top' : undefined" color="surface">
-    <v-list>
-      <v-list-item v-for="item in navItems" :key="item.title" :to="item.to" link>
-        <v-list-item-title>{{ item.title }}</v-list-item-title>
-      </v-list-item>
-    </v-list>
-  </v-navigation-drawer>
+      <!-- Mobile Menu Button -->
+      <button class="md:hidden p-2" @click="drawer = !drawer" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          ></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div v-if="drawer" class="md:hidden border-t shadow-lg">
+      <nav class="py-2">
+        <router-link
+          v-for="item in navItems"
+          :key="item.title"
+          :to="item.to"
+          class="nav-link block px-4 py-3 font-medium"
+          @click="drawer = false"
+        >
+          {{ item.title }}
+        </router-link>
+
+        <button @click="toggleDarkMode" class="flex items-center w-full px-4 py-3 font-medium">
+          <svg
+            v-if="isDark"
+            class="w-5 h-5 mr-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+            ></path>
+          </svg>
+          <svg v-else class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+            ></path>
+          </svg>
+          {{ isDark ? "Light Mode" : "Dark Mode" }}
+        </button>
+
+        <router-link
+          to="/contact"
+          class="block mx-4 my-3 px-4 py-2 bg-blue-600 text-white text-center rounded-md"
+          @click="drawer = false"
+        >
+          Join Now
+        </router-link>
+      </nav>
+    </div>
+  </header>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from "vue"
+import { useDarkMode } from "@/composables/useDarkMode"
 
 const drawer = ref(false)
-const group = ref(null)
+const { isDark, toggleDarkMode } = useDarkMode()
 
-watch(group, () => {
-  drawer.value = false
-})
 const navItems = [
-  { title: 'Home', to: '/', icon: 'home' },
-  { title: 'About', to: '/about', icon: 'face' },
-  { title: 'Timetable', to: '/timetable', icon: 'face' },
-  { title: 'Gallery', to: '/gallery', icon: 'face' },
-  { title: 'Contact', to: '/contact', icon: 'face' },
-  { title: 'Member Zone', to: '/member/dashboard', icon: 'face' },
+  { title: "Home", to: "/", icon: "home" },
+  { title: "About", to: "/about", icon: "face" },
+  { title: "Timetable", to: "/timetable", icon: "face" },
+  { title: "Gallery", to: "/gallery", icon: "face" },
+  { title: "Contact", to: "/contact", icon: "face" },
+  { title: "Member Zone", to: "/member/dashboard", icon: "face" },
 ]
 </script>

@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { ScheduleXCalendar } from '@schedule-x/vue'
+import { ScheduleXCalendar } from "@schedule-x/vue"
 import {
   createCalendar,
   createViewDay,
@@ -13,35 +13,35 @@ import {
   createViewMonthGrid,
   createViewWeek,
   viewMonthGrid,
-} from '@schedule-x/calendar'
-import '@schedule-x/theme-default/dist/index.css'
-import { createIcalendarPlugin } from '@schedule-x/ical'
-
+} from "@schedule-x/calendar"
+import "@schedule-x/theme-default/dist/index.css"
+import { createIcalendarPlugin } from "@schedule-x/ical"
 
 const icalendarPlugin = createIcalendarPlugin({
-  data: 'BEGIN:VCALENDAR\n' +
-    'VERSION:2.0\n' +
-    'CALSCALE:GREGORIAN\n' +
-    'BEGIN:VEVENT\n' +
-    'SUMMARY:Good morning\n' +
-    'DTSTART;TZID=America/New_York:20240801T103400\n' +
-    'DTEND;TZID=America/New_York:20240801T110400\n' +
-    'LOCATION:1000 Broadway Ave.\\, Brooklyn\n' +
-    'DESCRIPTION: Access-A-Ride trip to 900 Jay St.\\, Brooklyn\n' +
-    'STATUS:CONFIRMED\n' +
-    'SEQUENCE:3\n' +
-    'END:VEVENT\n' +
-    'BEGIN:VEVENT\n' +
-    'RRULE:FREQ=DAILY;COUNT=3\n' +
-    'SUMMARY:Good night\n' +
-    'DTSTART;TZID=America/New_York:20240902T200000\n' +
-    'DTEND;TZID=America/New_York:20240902T203000\n' +
-    'LOCATION:900 Jay St.\\, Brooklyn\n' +
-    'DESCRIPTION: Access-A-Ride trip to 1000 Broadway Ave.\\, Brooklyn\n' +
-    'STATUS:CONFIRMED\n' +
-    'SEQUENCE:3\n' +
-    'END:VEVENT\n' +
-    'END:VCALENDAR',
+  data:
+    "BEGIN:VCALENDAR\n" +
+    "VERSION:2.0\n" +
+    "CALSCALE:GREGORIAN\n" +
+    "BEGIN:VEVENT\n" +
+    "SUMMARY:Good morning\n" +
+    "DTSTART;TZID=America/New_York:20240801T103400\n" +
+    "DTEND;TZID=America/New_York:20240801T110400\n" +
+    "LOCATION:1000 Broadway Ave.\\, Brooklyn\n" +
+    "DESCRIPTION: Access-A-Ride trip to 900 Jay St.\\, Brooklyn\n" +
+    "STATUS:CONFIRMED\n" +
+    "SEQUENCE:3\n" +
+    "END:VEVENT\n" +
+    "BEGIN:VEVENT\n" +
+    "RRULE:FREQ=DAILY;COUNT=3\n" +
+    "SUMMARY:Good night\n" +
+    "DTSTART;TZID=America/New_York:20240902T200000\n" +
+    "DTEND;TZID=America/New_York:20240902T203000\n" +
+    "LOCATION:900 Jay St.\\, Brooklyn\n" +
+    "DESCRIPTION: Access-A-Ride trip to 1000 Broadway Ave.\\, Brooklyn\n" +
+    "STATUS:CONFIRMED\n" +
+    "SEQUENCE:3\n" +
+    "END:VEVENT\n" +
+    "END:VCALENDAR",
 })
 
 const config = {
@@ -60,8 +60,8 @@ const config = {
    * extends into the next day until 3am.
    * */
   dayBoundaries: {
-    start: '08:00',
-    end: '21:00',
+    start: "08:00",
+    end: "21:00",
   },
 
   weekOptions: {
@@ -76,7 +76,7 @@ const config = {
    * */
   callbacks: {
     onRangeUpdate(range) {
-      console.log('rendering events for new range', range)
+      console.log("rendering events for new range", range)
       icalendarPlugin.between(range.start, range.end)
     },
   },
@@ -184,25 +184,20 @@ const config = {
       console.log('onRender', $app)
     },
   },*/
-  selectedDate: '2023-12-19',
-  views: [
-    createViewDay(),
-    createViewWeek(),
-    createViewMonthGrid(),
-    createViewMonthAgenda(),
-  ],
+  selectedDate: "2023-12-19",
+  views: [createViewDay(), createViewWeek(), createViewMonthGrid(), createViewMonthAgenda()],
   events: [
     {
       id: 1,
-      title: 'Event 1',
-      start: '2023-12-19',
-      end: '2023-12-19',
+      title: "Event 1",
+      start: "2023-12-19",
+      end: "2023-12-19",
     },
     {
       id: 2,
-      title: 'Event 2',
-      start: '2023-12-20 12:00',
-      end: '2023-12-20 13:00',
+      title: "Event 2",
+      start: "2023-12-20 12:00",
+      end: "2023-12-20 13:00",
     },
   ],
 }
