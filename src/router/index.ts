@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 import Home from "@/pages/Home.vue"
-import { fetchAuthSession } from "aws-amplify/auth"
+import { useAuthStore } from "@/stores/auth"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,20 +57,18 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth) {
+    const authStore = useAuthStore()
+
     try {
-      // You can use fetchAuthSession to see if there's an active token
-      const { tokens } = await fetchAuthSession()
-      if (tokens && tokens.idToken && tokens.accessToken) {
-        next() // Session tokens exist, proceed
+      const isAuthenticated = await authStore.checkAuthStatus()
+      if (isAuthenticated) {
+        next()
       } else {
-        console.log("No active session tokens found, redirecting to login.")
+        console.log("No active session found, redirecting to login.")
         next("/member")
       }
     } catch (error) {
-      console.log(
-        "Error checking authentication (fetchAuthSession failed), redirecting to login:",
-        error,
-      )
+      console.log("Error checking authentication, redirecting to login:", error)
       next("/member")
     }
   } else {

@@ -1,0 +1,12 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Run linting and formatting before commit
+npm run lint
+npm run format
+
+# Run type checking
+npm run type-check
+
+# Run unit tests (if they exist)
+npm run test:unit --run

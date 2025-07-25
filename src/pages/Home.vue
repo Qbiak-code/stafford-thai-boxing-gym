@@ -51,15 +51,17 @@
 import { ref, onMounted } from "vue"
 import { gsap } from "gsap"
 
-const headline = ref(null)
+const headline = ref<HTMLElement | null>(null)
 
 onMounted(() => {
-  gsap.from(headline.value, {
-    duration: 1.5,
-    opacity: 0,
-    y: -50,
-    ease: "power3.out",
-  })
+  if (headline.value) {
+    gsap.from(headline.value, {
+      duration: 1.5,
+      opacity: 0,
+      y: -50,
+      ease: "power3.out",
+    })
+  }
 })
 </script>
 

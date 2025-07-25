@@ -15,7 +15,7 @@ export function useDarkMode() {
       }
       updateHtmlClass()
     } catch (error) {
-      console.warn("Could not initialize dark mode:", error)
+      // Fallback to light mode if localStorage is not available
       isDark.value = false
       updateHtmlClass()
     }
@@ -27,20 +27,17 @@ export function useDarkMode() {
       const htmlElement = document.documentElement
       if (isDark.value) {
         htmlElement.classList.add("dark")
-        console.log("Dark mode enabled")
       } else {
         htmlElement.classList.remove("dark")
-        console.log("Dark mode disabled")
       }
     } catch (error) {
-      console.error("Error updating HTML class:", error)
+      // Silent fail - DOM manipulation might not be available in SSR
     }
   }
 
   // Toggle dark mode
   const toggleDarkMode = () => {
     isDark.value = !isDark.value
-    console.log("Toggled dark mode to:", isDark.value)
   }
 
   // Watch for changes and persist to localStorage
@@ -49,7 +46,7 @@ export function useDarkMode() {
       localStorage.setItem("darkMode", newValue.toString())
       updateHtmlClass()
     } catch (error) {
-      console.error("Error saving dark mode preference:", error)
+      // Silent fail if localStorage is not available
     }
   })
 
