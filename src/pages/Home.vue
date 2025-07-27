@@ -10,7 +10,6 @@
         <!-- Base image -->
         <div
           class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style="background-image: url('/src/assets/hero-bg.jpg')"
         ></div>
 
         <!-- Primary overlay - different for light/dark -->
@@ -75,7 +74,7 @@
           <div class="lg:w-1/2 space-y-8">
             <h2 class="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-gray-900 dark:text-white">
               Welcome to
-              <span class="gradient-text">Stafford Thai Boxing Gym</span>
+              <span class="gradient-text">Stafford Thaiboxing Gym</span>
             </h2>
 
             <p class="text-xl leading-relaxed text-gray-700 dark:text-gray-300">

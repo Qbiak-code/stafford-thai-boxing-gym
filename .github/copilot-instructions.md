@@ -1,7 +1,7 @@
-# GitHub Copilot Instructions - Stafford Thai Boxing Gym
+# GitHub Copilot Instructions - Stafford Thaiboxing Gym
 
 ## Project Overview
-This is a Vue 3 + TypeScript web application for Stafford Thai Boxing Gym in the UK. The project is a member portal and public website that handles gym information, class timetables, member authentication, and subscription management.
+This is a Vue 3 + TypeScript web application for Stafford Thaiboxing Gym in the UK. The project is a member portal and public website that handles gym information, class timetables, member authentication, and subscription management.
 
 ## Tech Stack
 - **Frontend**: Vue 3 + TypeScript + Vite + Tailwind CSS

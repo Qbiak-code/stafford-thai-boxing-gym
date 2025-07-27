@@ -1,4 +1,4 @@
--- Stafford Thai Boxing Gym Database Schema - FIXED VERSION
+-- Stafford Thaiboxing Gym Database Schema - FIXED VERSION
 -- For Supabase PostgreSQL (EU region for GDPR compliance)
 -- This version fixes the infinite recursion issue in RLS policies
 

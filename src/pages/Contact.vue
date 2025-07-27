@@ -102,7 +102,9 @@
                   </svg>
                   <div>
                     <p class="font-semibold">Address</p>
-                    <p class="">[Your Gym Address Here]</p>
+                    <p class="">19b Raleigh Hall Industrial Estate</p>
+                    <p class="">Eccleshall</p>
+                    <p class="">ST21 6JL</p>
                   </div>
                 </div>
                 <div class="flex items-start space-x-3">
@@ -121,7 +123,7 @@
                   </svg>
                   <div>
                     <p class="font-semibold">Phone</p>
-                    <p class="">[Your Phone Number Here]</p>
+                    <p class="">07813 449416</p>
                   </div>
                 </div>
                 <div class="flex items-start space-x-3">
@@ -157,7 +159,7 @@
         <div class="max-w-4xl mx-auto">
           <div class="rounded-lg overflow-hidden shadow-lg">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2448.9711674482597!2d-2.128710323366914!3d52.80210086884617!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487a55ed99e9b085%3A0x6b7c5b7b7b7b7b7b!2sStafford%20Thai%20Boxing%20Gym!5e0!3m2!1sen!2suk!4v1718361600000!5m2!1sen!2suk"
+              src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d308237.842178429!2d-2.2454212!3d52.8744671!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487a65ad2723eee7%3A0xaf502b401f3e47b2!2sStafford%20Thaiboxing%20Gym!5e0!3m2!1sen!2suk!4v1753648312764!5m2!1sen!2suk"
               width="100%"
               height="450"
               style="border: 0"

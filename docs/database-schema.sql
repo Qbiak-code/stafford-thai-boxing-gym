@@ -1,4 +1,4 @@
--- Stafford Thai Boxing Gym Database Schema
+-- Stafford Thaiboxing Gym Database Schema
 -- For Supabase PostgreSQL (EU region for GDPR compliance)
 -- FIXED VERSION - Run this instead
 

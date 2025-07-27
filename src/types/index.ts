@@ -1,4 +1,4 @@
-// Core Types for Stafford Thai Boxing Gym Portal
+// Core Types for Stafford Thaiboxing Gym Portal
 
 // User Authentication & Profile
 export interface User {

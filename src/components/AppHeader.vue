@@ -3,7 +3,7 @@
     <div class="container mx-auto px-4 flex items-center justify-between h-16">
       <router-link to="/" class="flex items-center no-underline">
         <h1 class="toolbar-title font-bold text-xl text-primary-600 dark:text-primary-400 transition-colors">
-          Stafford Thai Boxing Gym
+          Stafford Thaiboxing Gym
         </h1>
       </router-link>
 
@@ -44,11 +44,20 @@
           </svg>
         </button>
 
+        <!-- Auth Buttons -->
         <router-link
-          to="/contact"
-          class="ml-4 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-md transition-colors duration-200 shadow-soft hover:shadow-glow"
+          v-if="!authStore.isAuthenticated"
+          to="/member"
+          class="ml-4 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md transition-colors duration-200"
         >
-          Join Now
+          Login
+        </router-link>
+        <router-link
+          v-else
+          to="/member/dashboard"
+          class="ml-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors duration-200"
+        >
+          Dashboard
         </router-link>
       </nav>
 
@@ -97,6 +106,24 @@
           {{ isDark ? 'Light Mode' : 'Dark Mode' }}
         </button>
 
+        <!-- Mobile auth buttons -->
+        <router-link
+          v-if="!authStore.isAuthenticated"
+          to="/member"
+          class="block w-full px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-center rounded-md transition-colors duration-200 mt-4"
+          @click="closeMobileMenu"
+        >
+          Login
+        </router-link>
+        <router-link
+          v-else
+          to="/member/dashboard"
+          class="block w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-center rounded-md transition-colors duration-200 mt-4"
+          @click="closeMobileMenu"
+        >
+          Dashboard
+        </router-link>
+
         <router-link
           to="/contact"
           class="block w-full px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-center rounded-md transition-colors duration-200 mt-4"
@@ -112,8 +139,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useDarkMode } from '@/composables/useDarkMode'
+import { useAuthStore } from '@/stores/auth'
 
 const { isDark, toggleDarkMode } = useDarkMode()
+const authStore = useAuthStore()
 
 const isMobileMenuOpen = ref(false)
 

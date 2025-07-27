@@ -1,4 +1,4 @@
-# Project Context - Stafford Thai Boxing Gym
+# Project Context - Stafford Thaiboxing Gym
 
 ## Business Requirements Summary
 
@@ -113,7 +113,7 @@
 ### SEO Keywords (Local)
 - "Muay Thai Stafford"
 - "Martial arts gym Staffordshire"
-- "Thai boxing classes near me"
+- "Thaiboxing classes near me"
 - "Self defense training Stafford"
 
 ### Content Types

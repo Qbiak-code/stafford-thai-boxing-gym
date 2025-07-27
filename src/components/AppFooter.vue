@@ -11,7 +11,7 @@
         </div>
         <div class="max-w-2xl">
           <p class="text-gray-800 dark:text-gray-200 transition-colors">
-            &copy; {{ new Date().getFullYear() }} Stafford Thai Boxing Gym. The Art of Eight Limbs. All
+            &copy; {{ new Date().getFullYear() }} Stafford Thaiboxing Gym. The Art of Eight Limbs. All
             Rights Reserved.
           </p>
           <p class="mt-2 text-gray-600 dark:text-gray-400 transition-colors">
