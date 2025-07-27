@@ -1,62 +1,53 @@
-import { ref, onMounted, watch } from "vue"
+import { ref, computed, watch } from "vue"
+
+const isDark = ref(false)
 
 export function useDarkMode() {
-  const isDark = ref(false)
-
   // Initialize dark mode from localStorage or system preference
-  const initDarkMode = () => {
-    try {
-      const stored = localStorage.getItem("darkMode")
-      if (stored !== null) {
-        isDark.value = stored === "true"
-      } else {
-        // Check system preference
-        isDark.value = window.matchMedia("(prefers-color-scheme: dark)").matches
-      }
-      updateHtmlClass()
-    } catch (error) {
-      // Fallback to light mode if localStorage is not available
-      isDark.value = false
-      updateHtmlClass()
+  const initializeDarkMode = () => {
+    const stored = localStorage.getItem("darkMode")
+    if (stored !== null) {
+      isDark.value = JSON.parse(stored)
+    } else {
+      // Check system preference
+      isDark.value = window.matchMedia("(prefers-color-scheme: dark)").matches
     }
+    updateDomClass()
   }
 
-  // Update the HTML class for dark mode
-  const updateHtmlClass = () => {
-    try {
-      const htmlElement = document.documentElement
-      if (isDark.value) {
-        htmlElement.classList.add("dark")
-      } else {
-        htmlElement.classList.remove("dark")
-      }
-    } catch (error) {
-      // Silent fail - DOM manipulation might not be available in SSR
+  // Update DOM class
+  const updateDomClass = () => {
+    const htmlElement = document.documentElement
+    if (isDark.value) {
+      htmlElement.classList.add("dark")
+    } else {
+      htmlElement.classList.remove("dark")
     }
   }
 
   // Toggle dark mode
   const toggleDarkMode = () => {
     isDark.value = !isDark.value
+    localStorage.setItem("darkMode", JSON.stringify(isDark.value))
+    updateDomClass()
   }
 
-  // Watch for changes and persist to localStorage
-  watch(isDark, (newValue) => {
-    try {
-      localStorage.setItem("darkMode", newValue.toString())
-      updateHtmlClass()
-    } catch (error) {
-      // Silent fail if localStorage is not available
-    }
-  })
+  // Set dark mode explicitly
+  const setDarkMode = (value: boolean) => {
+    isDark.value = value
+    localStorage.setItem("darkMode", JSON.stringify(value))
+    updateDomClass()
+  }
 
-  // Initialize on mount
-  onMounted(() => {
-    initDarkMode()
-  })
+  // Auto-initialize when composable is used
+  if (typeof window !== "undefined") {
+    initializeDarkMode()
+  }
 
   return {
-    isDark,
+    isDark: computed(() => isDark.value),
     toggleDarkMode,
+    setDarkMode,
+    initializeDarkMode,
   }
 }

@@ -1,21 +1,27 @@
 <template>
-  <footer class="bg-gray-200 py-8 mt-auto">
+  <footer class="bg-gray-50 dark:bg-gray-800 py-8 mt-auto border-t border-gray-200 dark:border-gray-700 transition-colors duration-300">
     <div class="container mx-auto px-4">
       <div class="flex flex-col items-center text-center">
         <div class="mb-4">
-          <img src="/logo.png" alt="Logo" class="h-15 mx-auto" />
+          <img
+            src="/logo.png"
+            alt="Logo"
+            class="h-15 mx-auto transition-opacity duration-300 opacity-90 dark:opacity-75 dark:brightness-90"
+          />
         </div>
         <div class="max-w-2xl">
-          <p>
+          <p class="text-gray-800 dark:text-gray-200 transition-colors">
             &copy; {{ new Date().getFullYear() }} Stafford Thai Boxing Gym. The Art of Eight Limbs. All
             Rights Reserved.
           </p>
-          <p class="mt-2 text-gray-600">Built by Fil. Powered by Vue.js & Tailwind CSS.</p>
+          <p class="mt-2 text-gray-600 dark:text-gray-400 transition-colors">
+            Built by Fil. Powered by Vue.js & Tailwind CSS.
+          </p>
         </div>
         <div class="mt-4 flex space-x-4">
           <a
             href="#"
-            class="p-2 text-gray-600 hover:text-blue-600 transition-colors duration-200"
+            class="p-2 text-gray-600 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-200"
             aria-label="Facebook"
           >
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -26,7 +32,7 @@
           </a>
           <a
             href="#"
-            class="p-2 text-gray-600 hover:text-pink-600 transition-colors duration-200"
+            class="p-2 text-gray-600 dark:text-gray-400 hover:text-secondary-500 dark:hover:text-secondary-400 transition-colors duration-200"
             aria-label="Instagram"
           >
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -37,7 +43,7 @@
           </a>
           <a
             href="#"
-            class="p-2 text-gray-600 hover:text-red-600 transition-colors duration-200"
+            class="p-2 text-gray-600 dark:text-gray-400 hover:text-secondary-500 dark:hover:text-secondary-400 transition-colors duration-200"
             aria-label="YouTube"
           >
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">

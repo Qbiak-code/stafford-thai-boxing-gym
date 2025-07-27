@@ -67,7 +67,7 @@ export interface SubscriptionPlan {
   price_monthly: number // in pence (UK)
   price_yearly: number | null // in pence (UK)
   stripe_price_id: string | null
-  features: Record<string, any> | null
+  features: Record<string, unknown> | null
   is_active: boolean | null
   vat_rate?: number // UK VAT rate (20%)
 }

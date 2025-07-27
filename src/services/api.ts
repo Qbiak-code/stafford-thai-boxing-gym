@@ -34,9 +34,18 @@ const handleError = (error: unknown): string => {
     return error
   }
   if (error && typeof error === 'object' && 'message' in error) {
-    return String(error.message)
+    return String((error as { message: unknown }).message)
   }
   return 'An unknown error occurred'
+}
+
+// Helper function to get current user ID
+const getCurrentUserId = async (): Promise<string> => {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user?.id) {
+    throw new Error('User not authenticated')
+  }
+  return user.id
 }
 
 // Classes API
@@ -66,11 +75,13 @@ export const classesAPI = {
 
   async bookClass(classId: string, bookingDate: string): Promise<ApiResponse<null>> {
     try {
+      const userId = await getCurrentUserId()
+
       const { error } = await supabase
         .from('class_bookings')
         .insert({
           class_id: classId,
-          user_id: (await supabase.auth.getUser()).data.user?.id,
+          user_id: userId,
           booking_date: bookingDate,
           status: 'confirmed'
         })
@@ -88,11 +99,13 @@ export const classesAPI = {
 
   async cancelBooking(bookingId: string): Promise<ApiResponse<null>> {
     try {
+      const userId = await getCurrentUserId()
+
       const { error } = await supabase
         .from('class_bookings')
         .update({ status: 'cancelled' })
         .eq('id', bookingId)
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', userId)
 
       if (error) throw error
 
@@ -107,13 +120,15 @@ export const classesAPI = {
 
   async getUserBookings(): Promise<ApiResponse<ClassBooking[]>> {
     try {
+      const userId = await getCurrentUserId()
+
       const { data, error } = await supabase
         .from('class_bookings')
         .select(`
           *,
           class:classes(*)
         `)
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', userId)
         .eq('status', 'confirmed')
         .gte('booking_date', new Date().toISOString().split('T')[0])
         .order('booking_date', { ascending: true })
@@ -179,13 +194,15 @@ export const subscriptionsAPI = {
 
   async getUserSubscription(): Promise<ApiResponse<UserSubscription | null>> {
     try {
+      const userId = await getCurrentUserId()
+
       const { data, error } = await supabase
         .from('user_subscriptions')
         .select(`
           *,
           plan:subscription_plans(*)
         `)
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', userId)
         .eq('status', 'active')
         .single()
 
@@ -207,6 +224,7 @@ export const subscriptionsAPI = {
     try {
       // This will need to call a Supabase Edge Function for Stripe integration
       // For now, return a mock response
+      console.log('Creating payment intent for plan:', planId)
       return {
         success: true,
         data: { clientSecret: 'mock_client_secret' }
@@ -223,6 +241,7 @@ export const subscriptionsAPI = {
     try {
       // This will need to call a Supabase Edge Function for Stripe integration
       // For now, return success
+      console.log('Confirming subscription for payment intent:', paymentIntentId)
       return { success: true }
     } catch (error) {
       return {
@@ -234,13 +253,15 @@ export const subscriptionsAPI = {
 
   async cancelSubscription(): Promise<ApiResponse<null>> {
     try {
+      const userId = await getCurrentUserId()
+
       const { error } = await supabase
         .from('user_subscriptions')
         .update({
           status: 'cancelled',
           cancelled_at: new Date().toISOString()
         })
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', userId)
         .eq('status', 'active')
 
       if (error) throw error
@@ -361,13 +382,15 @@ export const eventsAPI = {
 export const profileAPI = {
   async updateProfile(profileData: Partial<UserProfile>): Promise<ApiResponse<null>> {
     try {
+      const userId = await getCurrentUserId()
+
       const { error } = await supabase
         .from('profiles')
         .update({
           ...profileData,
           updated_at: new Date().toISOString()
         })
-        .eq('id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('id', userId)
 
       if (error) throw error
 
@@ -382,10 +405,12 @@ export const profileAPI = {
 
   async getProfile(): Promise<ApiResponse<UserProfile>> {
     try {
+      const userId = await getCurrentUserId()
+
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('id', userId)
         .single()
 
       if (error) throw error

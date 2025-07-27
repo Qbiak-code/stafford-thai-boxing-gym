@@ -5,7 +5,7 @@
     </div>
 
     <!-- Show auth forms if not authenticated -->
-    <div v-if="!authStore.isAuthenticated" class="auth-container">
+    <div v-if="!authStore.isAuthenticated && !emailConfirmationSent" class="auth-container">
       <!-- Tab Navigation -->
       <div class="tab-navigation">
         <button
@@ -111,33 +111,54 @@
         </form>
       </div>
 
-      <!-- Error Message -->
+      <!-- Error message - show for both login and signup -->
       <div v-if="authStore.error" class="error-message">
         {{ authStore.error }}
         <button @click="authStore.clearError" class="btn-link">Dismiss</button>
       </div>
     </div>
 
-    <!-- Show authenticated state -->
-    <div v-else class="authenticated-state">
-      <h2>Welcome back, {{ authStore.userFullName }}!</h2>
-      <p>You are already logged in.</p>
-      <div class="auth-actions">
-        <router-link to="/member/dashboard" class="btn btn-primary">Go to Dashboard</router-link>
-        <button @click="handleSignOut" class="btn btn-secondary">Sign Out</button>
+    <div v-if="emailConfirmationSent" class="confirmation-message">
+      <h2>📧 Check Your Email</h2>
+      <div class="confirmation-content">
+        <p>We've sent a confirmation link to</p>
+        <p class="email-highlight">{{ confirmationEmail }}</p>
+        <p>Please click the link in your email to activate your account, then return here to log in.</p>
+
+        <div class="confirmation-actions">
+          <button @click="backToLogin" class="btn btn-primary">
+            Back to Login
+          </button>
+          <button @click="resendConfirmation" class="btn btn-secondary" :disabled="resendCooldown > 0">
+            {{ resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend Email' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Show loading state for authenticated users while redirecting -->
+    <div v-else-if="authStore.isAuthenticated" class="redirect-state">
+      <div class="loading-message">
+        <h2>Redirecting to your dashboard...</h2>
+        <div class="spinner"></div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue"
+import { ref, reactive, onMounted, watch } from "vue"
 import { useRouter } from "vue-router"
 import { useAuthStore } from "@/stores/auth"
 import type { LoginCredentials, SignupData } from "@/types"
+import { supabase } from "@/lib/supabase.ts"
 
 const authStore = useAuthStore()
 const router = useRouter()
+
+const emailConfirmationSent = ref(false)
+const confirmationEmail = ref('')
+const resendCooldown = ref(0)
 
 const activeTab = ref<'login' | 'signup'>('login')
 
@@ -163,15 +184,43 @@ const handleLogin = async () => {
 
 const handleSignup = async () => {
   const success = await authStore.signup(signupForm)
-  if (success) {
+
+  if (!success) {
+    if (authStore.error?.includes('check your email')) {
+      emailConfirmationSent.value = true
+      confirmationEmail.value = signupForm.email
+      authStore.clearError()
+    }
+  } else if (success) {
     router.push("/member/dashboard")
   }
 }
 
-const handleSignOut = async () => {
-  await authStore.logout()
-  // Reset forms
-  Object.assign(loginForm, { email: "", password: "" })
+const resendConfirmation = async () => {
+  if (resendCooldown.value > 0) return
+
+  try {
+    await supabase.auth.resend({
+      type: 'signup',
+      email: confirmationEmail.value
+    })
+
+    resendCooldown.value = 60
+    const timer = setInterval(() => {
+      resendCooldown.value--
+      if (resendCooldown.value <= 0) {
+        clearInterval(timer)
+      }
+    }, 1000)
+  } catch (err) {
+    console.error('Failed to resend confirmation:', err)
+  }
+}
+
+const backToLogin = () => {
+  emailConfirmationSent.value = false
+  confirmationEmail.value = ''
+  activeTab.value = 'login'
   Object.assign(signupForm, { email: "", password: "", firstName: "", lastName: "", phone: "" })
 }
 
@@ -179,6 +228,13 @@ onMounted(async () => {
   // Initialize auth and check if user is already logged in
   await authStore.initializeAuth()
   if (authStore.isAuthenticated) {
+    router.push("/member/dashboard")
+  }
+})
+
+// Watch for auth state changes and redirect immediately
+watch(() => authStore.isAuthenticated, (isAuthenticated) => {
+  if (isAuthenticated) {
     router.push("/member/dashboard")
   }
 })
@@ -301,36 +357,71 @@ onMounted(async () => {
   margin-left: 10px;
 }
 
-.authenticated-state {
+.confirmation-message {
   max-width: 500px;
   margin: 0 auto;
   background: #2a2a2a;
   padding: 40px;
   border-radius: 10px;
+  text-align: center;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.authenticated-state h2 {
+.confirmation-message h2 {
   color: #27ae60;
   margin-bottom: 20px;
 }
 
-.authenticated-state p {
+.confirmation-content p {
   color: #e0e0e0;
-  margin-bottom: 30px;
+  margin-bottom: 15px;
 }
 
-.auth-actions {
+.email-highlight {
+  color: #3b82f6 !important;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.confirmation-actions {
   display: flex;
   gap: 15px;
   justify-content: center;
+  margin-top: 30px;
+  flex-wrap: wrap;
 }
 
-.auth-actions .btn {
-  padding: 12px 24px;
-  text-decoration: none;
-  border-radius: 5px;
-  font-weight: 600;
-  transition: all 0.3s;
+.confirmation-actions .btn {
+  min-width: 120px;
+}
+
+.redirect-state {
+  max-width: 400px;
+  margin: 0 auto;
+  background: #2a2a2a;
+  padding: 40px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.loading-message h2 {
+  color: #27ae60;
+  margin-bottom: 20px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+  border: 4px solid #333;
+  border-top: 4px solid #c9302c;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>

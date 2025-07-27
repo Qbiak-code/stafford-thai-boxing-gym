@@ -80,7 +80,17 @@ export const useAuthStore = defineStore("auth", () => {
 
       if (authError) throw authError
 
-      if (authData.user) {
+      if (authData.user && !authData.session) {
+        if (authData.user.email_confirmed_at) {
+          error.value = "An account with this email already exists. Please try logging in instead."
+          return false
+        } else {
+          error.value = `Please check your email (${signupData.email}) and click the confirmation link to activate your account.`
+          return false
+        }
+      }
+
+      if (authData.user && authData.session) {
         // Create or update profile
         const { error: profileError } = await supabase.from("profiles").upsert({
           id: authData.user.id,
