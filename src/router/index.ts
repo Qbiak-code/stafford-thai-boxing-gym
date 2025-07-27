@@ -55,25 +55,23 @@ const router = createRouter({
   ],
 })
 
+// Replace AWS auth guard with Supabase auth guard
 router.beforeEach(async (to, from, next) => {
-  if (to.meta.requiresAuth) {
-    const authStore = useAuthStore()
+  const authStore = useAuthStore()
 
-    try {
-      const isAuthenticated = await authStore.checkAuthStatus()
-      if (isAuthenticated) {
-        next()
-      } else {
-        console.log("No active session found, redirecting to login.")
-        next("/member")
-      }
-    } catch (error) {
-      console.log("Error checking authentication, redirecting to login:", error)
-      next("/member")
+  // Check if route requires authentication
+  if (to.meta.requiresAuth) {
+    // Check current auth status
+    const isAuthenticated = await authStore.checkAuthStatus()
+
+    if (!isAuthenticated) {
+      // Redirect to login if not authenticated
+      next({ name: "member-login" })
+      return
     }
-  } else {
-    next()
   }
+
+  next()
 })
 
 export default router

@@ -174,7 +174,7 @@
 
 <script setup lang="ts">
 import { ref, reactive } from "vue"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 
 // Reactive form data
 const formData = reactive({
@@ -188,34 +188,38 @@ const submitting = ref(false)
 const statusMessage = ref<string | null>(null)
 const isSuccess = ref(false)
 
-// Replace with your actual Contact Form API Gateway Endpoint URL
-const CONTACT_API_ENDPOINT =
-  "https://2xdtf9knb5.execute-api.eu-west-2.amazonaws.com/dev/staffordthai-contact-form-lambda"
-
 const handleSubmit = async () => {
   submitting.value = true
   statusMessage.value = null
   isSuccess.value = false
 
   try {
-    const response = await axios.post(CONTACT_API_ENDPOINT, formData)
+    // Submit to Supabase contact_submissions table instead of AWS Lambda
+    const { error } = await supabase
+      .from('contact_submissions')
+      .insert({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        status: 'new',
+        marketing_consent: false,
+        gdpr_consent: true
+      })
 
-    if (response.status === 200) {
-      statusMessage.value = response.data.message || "Message sent successfully!"
-      isSuccess.value = true
-      // Clear form
-      formData.name = ""
-      formData.email = ""
-      formData.subject = ""
-      formData.message = ""
-    } else {
-      statusMessage.value = response.data.message || "Failed to send message. Please try again."
-      isSuccess.value = false
-    }
-  } catch (error: any) {
-    console.error("Error submitting contact form:", error)
-    statusMessage.value =
-      error.response?.data?.message || "An error occurred. Please try again later."
+    if (error) throw error
+
+    statusMessage.value = "Message sent successfully! We'll get back to you soon."
+    isSuccess.value = true
+
+    // Clear form
+    formData.name = ""
+    formData.email = ""
+    formData.subject = ""
+    formData.message = ""
+
+  } catch (err: any) {
+    statusMessage.value = err.message || "Failed to send message. Please try again."
     isSuccess.value = false
   } finally {
     submitting.value = false

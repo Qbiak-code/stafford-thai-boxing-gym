@@ -7,7 +7,7 @@
         </div>
         <div class="max-w-2xl">
           <p>
-            &copy; {{ new Date().getFullYear() }} Stafford Muay Thai. The Art of Eight Limbs. All
+            &copy; {{ new Date().getFullYear() }} Stafford Thai Boxing Gym. The Art of Eight Limbs. All
             Rights Reserved.
           </p>
           <p class="mt-2 text-gray-600">Built by Fil. Powered by Vue.js & Tailwind CSS.</p>

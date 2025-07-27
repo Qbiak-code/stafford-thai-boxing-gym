@@ -1,9 +1,9 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
-import { authAPI } from '@/services/api'
-import type { User, LoginCredentials, SignupData } from '@/types'
+import { ref, computed } from "vue"
+import { defineStore } from "pinia"
+import { supabase } from "@/lib/supabase"
+import type { User, LoginCredentials, SignupData } from "@/types"
 
-export const useAuthStore = defineStore('auth', () => {
+export const useAuthStore = defineStore("auth", () => {
   // State
   const user = ref<User | null>(null)
   const isLoading = ref(false)
@@ -12,7 +12,7 @@ export const useAuthStore = defineStore('auth', () => {
   // Getters
   const isAuthenticated = computed(() => !!user.value)
   const userFullName = computed(() =>
-    user.value ? `${user.value.firstName} ${user.value.lastName}` : ''
+    user.value ? `${user.value.firstName} ${user.value.lastName}` : "",
   )
 
   // Actions
@@ -21,32 +21,41 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
 
     try {
-      const response = await authAPI.login(credentials)
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: credentials.email,
+        password: credentials.password,
+      })
 
-      if (response.success && response.data) {
-        user.value = response.data
-        // Store auth token in localStorage (token would come from API response)
-        localStorage.setItem('authToken', 'mock-jwt-token') // Replace with actual token
-        return true
-      } else {
-        throw new Error(response.message || 'Login failed')
-      }
-    } catch (err: any) {
-      // Fallback to mock authentication for demo purposes
-      if (credentials.email === 'test@example.com' && credentials.password === 'password') {
-        user.value = {
-          id: '1',
-          email: credentials.email,
-          firstName: 'John',
-          lastName: 'Doe',
-          membershipType: 'Premium',
-          joinDate: '2024-01-15'
+      if (authError) throw authError
+
+      if (authData.user) {
+        // Get user profile from profiles table
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", authData.user.id)
+          .single()
+
+        if (profileError && profileError.code !== "PGRST116") {
+          // PGRST116 is "not found" - we'll create profile if it doesn't exist
+          throw profileError
         }
-        localStorage.setItem('authToken', 'mock-jwt-token')
+
+        user.value = {
+          id: authData.user.id,
+          email: authData.user.email!,
+          firstName: profile?.first_name || "",
+          lastName: profile?.last_name || "",
+          membershipType: profile?.membership_type || "Basic",
+          joinDate: profile?.created_at?.split("T")[0] || new Date().toISOString().split("T")[0],
+        }
+
         return true
       }
 
-      error.value = err.response?.data?.message || err.message || 'Login failed'
+      return false
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : "Login failed"
       return false
     } finally {
       isLoading.value = false
@@ -58,27 +67,46 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
 
     try {
-      const response = await authAPI.signup(signupData)
-
-      if (response.success && response.data) {
-        user.value = response.data
-        localStorage.setItem('authToken', 'mock-jwt-token') // Replace with actual token
-        return true
-      } else {
-        throw new Error(response.message || 'Signup failed')
-      }
-    } catch (err: any) {
-      // Fallback to mock signup for demo purposes
-      user.value = {
-        id: Date.now().toString(),
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: signupData.email,
-        firstName: signupData.firstName,
-        lastName: signupData.lastName,
-        membershipType: 'Basic',
-        joinDate: new Date().toISOString().split('T')[0]
+        password: signupData.password,
+        options: {
+          data: {
+            first_name: signupData.firstName,
+            last_name: signupData.lastName,
+          },
+        },
+      })
+
+      if (authError) throw authError
+
+      if (authData.user) {
+        // Create or update profile
+        const { error: profileError } = await supabase.from("profiles").upsert({
+          id: authData.user.id,
+          first_name: signupData.firstName,
+          last_name: signupData.lastName,
+          membership_type: "Basic",
+        })
+
+        if (profileError) throw profileError
+
+        user.value = {
+          id: authData.user.id,
+          email: authData.user.email!,
+          firstName: signupData.firstName,
+          lastName: signupData.lastName,
+          membershipType: "Basic",
+          joinDate: new Date().toISOString().split("T")[0],
+        }
+
+        return true
       }
-      localStorage.setItem('authToken', 'mock-jwt-token')
-      return true
+
+      return false
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : "Signup failed"
+      return false
     } finally {
       isLoading.value = false
     }
@@ -86,45 +114,54 @@ export const useAuthStore = defineStore('auth', () => {
 
   const logout = async () => {
     try {
-      await authAPI.logout()
-    } catch (err) {
-      // Silent fail for logout
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+    } catch (err: unknown) {
+      console.error("Logout error:", err instanceof Error ? err.message : "Unknown error")
     } finally {
       user.value = null
       error.value = null
-      localStorage.removeItem('authToken')
     }
   }
 
   const checkAuthStatus = async (): Promise<boolean> => {
-    const token = localStorage.getItem('authToken')
-    if (!token) return false
-
     isLoading.value = true
+
     try {
-      const response = await authAPI.verifyToken()
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession()
 
-      if (response.success && response.data) {
-        user.value = response.data
-        return true
-      } else {
-        throw new Error('Token verification failed')
-      }
-    } catch (err) {
-      // Fallback to mock verification for demo purposes
-      if (token === 'mock-jwt-token') {
-        user.value = {
-          id: '1',
-          email: 'test@example.com',
-          firstName: 'John',
-          lastName: 'Doe',
-          membershipType: 'Premium',
-          joinDate: '2024-01-15'
+      if (error) throw error
+
+      if (session?.user) {
+        // Get user profile
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", session.user.id)
+          .single()
+
+        if (profileError && profileError.code !== "PGRST116") {
+          throw profileError
         }
+
+        user.value = {
+          id: session.user.id,
+          email: session.user.email!,
+          firstName: profile?.first_name || "",
+          lastName: profile?.last_name || "",
+          membershipType: profile?.membership_type || "Basic",
+          joinDate: profile?.created_at?.split("T")[0] || new Date().toISOString().split("T")[0],
+        }
+
         return true
       }
 
-      logout()
+      return false
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : "Authentication check failed"
       return false
     } finally {
       isLoading.value = false
@@ -133,6 +170,21 @@ export const useAuthStore = defineStore('auth', () => {
 
   const clearError = () => {
     error.value = null
+  }
+
+  // Initialize auth state on store creation
+  const initializeAuth = async () => {
+    await checkAuthStatus()
+
+    // Listen for auth changes
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN" && session?.user) {
+        await checkAuthStatus()
+      } else if (event === "SIGNED_OUT") {
+        user.value = null
+        error.value = null
+      }
+    })
   }
 
   return {
@@ -148,6 +200,7 @@ export const useAuthStore = defineStore('auth', () => {
     signup,
     logout,
     checkAuthStatus,
-    clearError
+    clearError,
+    initializeAuth,
   }
 })

@@ -14,7 +14,7 @@
       <div class="md:w-1/2">
         <h2 class="text-3xl font-bold mb-6">Our Story</h2>
         <p class="text-lg leading-relaxed">
-          Founded in [Year], Stafford Muay Thai was born from a passion for the sport and a desire
+          Founded in [Year], Stafford Thai Boxing Gym was born from a passion for the sport and a desire
           to build a strong, supportive community. We believe that Muay Thai is for everyone,
           regardless of age, gender, or fitness level. Our mission is to provide the highest quality
           instruction in a safe and welcoming environment.

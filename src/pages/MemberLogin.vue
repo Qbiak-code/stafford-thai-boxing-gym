@@ -1,232 +1,336 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-md">
-      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-        Member Portal
-      </h2>
-      <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-        Sign in to your account or create a new one
-      </p>
+  <div class="member-login-page content-section">
+    <div class="page-hero">
+      <h1 class="page-title">Member Portal Login</h1>
     </div>
 
-    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-      <div class="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
-        <!-- Toggle between login and signup -->
-        <div class="flex justify-center mb-6">
-          <div class="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-            <button
-              @click="isSignup = false"
-              :class="[
-                'px-4 py-2 text-sm font-medium rounded-md transition-colors',
-                !isSignup
-                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-                  : 'text-gray-600 dark:text-gray-300'
-              ]"
-            >
-              Sign In
-            </button>
-            <button
-              @click="isSignup = true"
-              :class="[
-                'px-4 py-2 text-sm font-medium rounded-md transition-colors',
-                isSignup
-                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-                  : 'text-gray-600 dark:text-gray-300'
-              ]"
-            >
-              Sign Up
-            </button>
-          </div>
-        </div>
+    <!-- Show auth forms if not authenticated -->
+    <div v-if="!authStore.isAuthenticated" class="auth-container">
+      <!-- Tab Navigation -->
+      <div class="tab-navigation">
+        <button
+          :class="['tab-button', { active: activeTab === 'login' }]"
+          @click="activeTab = 'login'"
+        >
+          Login
+        </button>
+        <button
+          :class="['tab-button', { active: activeTab === 'signup' }]"
+          @click="activeTab = 'signup'"
+        >
+          Sign Up
+        </button>
+      </div>
 
-        <!-- Error message -->
-        <div v-if="authStore.error" class="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-          <p class="text-sm text-red-600 dark:text-red-400">{{ authStore.error }}</p>
-          <button @click="authStore.clearError" class="text-red-500 hover:text-red-700 text-xs mt-1">
-            Dismiss
-          </button>
-        </div>
-
-        <!-- Success message for authenticated user -->
-        <div v-if="authStore.isAuthenticated" class="text-center">
-          <div class="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
-            <p class="text-sm text-green-600 dark:text-green-400">
-              Welcome back, {{ authStore.userFullName }}!
-            </p>
-          </div>
-          <div class="space-y-3">
-            <router-link
-              to="/member/dashboard"
-              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Go to Dashboard
-            </router-link>
-            <button
-              @click="authStore.logout"
-              class="w-full flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-            >
-              Sign Out
-            </button>
-          </div>
-        </div>
-
-        <!-- Login/Signup Form -->
-        <form v-else @submit.prevent="handleSubmit" class="space-y-6">
-          <!-- First Name (signup only) -->
-          <div v-if="isSignup">
-            <label for="firstName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              First Name
-            </label>
+      <!-- Login Form -->
+      <div v-if="activeTab === 'login'" class="auth-form">
+        <h2>Login to Your Account</h2>
+        <form @submit.prevent="handleLogin">
+          <div class="form-group">
+            <label for="login-email">Email</label>
             <input
-              id="firstName"
-              v-model="form.firstName"
-              type="text"
-              required
-              class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-              placeholder="Enter your first name"
-            />
-          </div>
-
-          <!-- Last Name (signup only) -->
-          <div v-if="isSignup">
-            <label for="lastName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Last Name
-            </label>
-            <input
-              id="lastName"
-              v-model="form.lastName"
-              type="text"
-              required
-              class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-              placeholder="Enter your last name"
-            />
-          </div>
-
-          <!-- Email -->
-          <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Email address
-            </label>
-            <input
-              id="email"
-              v-model="form.email"
               type="email"
-              autocomplete="email"
+              id="login-email"
+              v-model="loginForm.email"
               required
-              class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-              placeholder="Enter your email"
-            />
-          </div>
-
-          <!-- Password -->
-          <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Password
-            </label>
-            <input
-              id="password"
-              v-model="form.password"
-              type="password"
-              autocomplete="current-password"
-              required
-              class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-              placeholder="Enter your password"
-            />
-          </div>
-
-          <!-- Confirm Password (signup only) -->
-          <div v-if="isSignup">
-            <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Confirm Password
-            </label>
-            <input
-              id="confirmPassword"
-              v-model="form.confirmPassword"
-              type="password"
-              required
-              class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-              placeholder="Confirm your password"
-            />
-          </div>
-
-          <div>
-            <button
-              type="submit"
               :disabled="authStore.isLoading"
-              class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <span v-if="authStore.isLoading" class="absolute left-0 inset-y-0 flex items-center pl-3">
-                <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              </span>
-              {{ authStore.isLoading ? 'Processing...' : (isSignup ? 'Create Account' : 'Sign In') }}
-            </button>
+            />
           </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input
+              type="password"
+              id="login-password"
+              v-model="loginForm.password"
+              required
+              :disabled="authStore.isLoading"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary auth-button" :disabled="authStore.isLoading">
+            {{ authStore.isLoading ? "Signing In..." : "Sign In" }}
+          </button>
         </form>
+      </div>
 
-        <!-- Demo credentials note -->
-        <div v-if="!isSignup && !authStore.isAuthenticated" class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
-          <p class="text-xs text-blue-600 dark:text-blue-400">
-            <strong>Demo:</strong> Use email: test@example.com, password: password
-          </p>
-        </div>
+      <!-- Signup Form -->
+      <div v-if="activeTab === 'signup'" class="auth-form">
+        <h2>Create New Account</h2>
+        <form @submit.prevent="handleSignup">
+          <div class="form-group">
+            <label for="signup-email">Email</label>
+            <input
+              type="email"
+              id="signup-email"
+              v-model="signupForm.email"
+              required
+              :disabled="authStore.isLoading"
+            />
+          </div>
+          <div class="form-group">
+            <label for="signup-password">Password</label>
+            <input
+              type="password"
+              id="signup-password"
+              v-model="signupForm.password"
+              required
+              :disabled="authStore.isLoading"
+            />
+          </div>
+          <div class="form-group">
+            <label for="signup-firstName">First Name</label>
+            <input
+              type="text"
+              id="signup-firstName"
+              v-model="signupForm.firstName"
+              required
+              :disabled="authStore.isLoading"
+            />
+          </div>
+          <div class="form-group">
+            <label for="signup-lastName">Last Name</label>
+            <input
+              type="text"
+              id="signup-lastName"
+              v-model="signupForm.lastName"
+              required
+              :disabled="authStore.isLoading"
+            />
+          </div>
+          <div class="form-group">
+            <label for="signup-phone">Phone (Optional)</label>
+            <input
+              type="tel"
+              id="signup-phone"
+              v-model="signupForm.phone"
+              :disabled="authStore.isLoading"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary auth-button" :disabled="authStore.isLoading">
+            {{ authStore.isLoading ? "Creating Account..." : "Create Account" }}
+          </button>
+        </form>
+      </div>
+
+      <!-- Error Message -->
+      <div v-if="authStore.error" class="error-message">
+        {{ authStore.error }}
+        <button @click="authStore.clearError" class="btn-link">Dismiss</button>
+      </div>
+    </div>
+
+    <!-- Show authenticated state -->
+    <div v-else class="authenticated-state">
+      <h2>Welcome back, {{ authStore.userFullName }}!</h2>
+      <p>You are already logged in.</p>
+      <div class="auth-actions">
+        <router-link to="/member/dashboard" class="btn btn-primary">Go to Dashboard</router-link>
+        <button @click="handleSignOut" class="btn btn-secondary">Sign Out</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import type { LoginCredentials, SignupData } from '@/types'
+import { ref, reactive, onMounted } from "vue"
+import { useRouter } from "vue-router"
+import { useAuthStore } from "@/stores/auth"
+import type { LoginCredentials, SignupData } from "@/types"
 
-const router = useRouter()
 const authStore = useAuthStore()
+const router = useRouter()
 
-const isSignup = ref(false)
-const form = reactive({
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  confirmPassword: ''
+const activeTab = ref<'login' | 'signup'>('login')
+
+const loginForm = reactive<LoginCredentials>({
+  email: "",
+  password: "",
 })
 
-const handleSubmit = async () => {
-  authStore.clearError()
+const signupForm = reactive<SignupData>({
+  email: "",
+  password: "",
+  firstName: "",
+  lastName: "",
+  phone: "",
+})
 
-  if (isSignup.value) {
-    if (form.password !== form.confirmPassword) {
-      // Set error directly since we don't have a validation system yet
-      authStore.error = 'Passwords do not match'
-      return
-    }
-
-    const signupData: SignupData = {
-      firstName: form.firstName,
-      lastName: form.lastName,
-      email: form.email,
-      password: form.password,
-      confirmPassword: form.confirmPassword
-    }
-
-    const success = await authStore.signup(signupData)
-    if (success) {
-      router.push('/member/dashboard')
-    }
-  } else {
-    const credentials: LoginCredentials = {
-      email: form.email,
-      password: form.password
-    }
-
-    const success = await authStore.login(credentials)
-    if (success) {
-      router.push('/member/dashboard')
-    }
+const handleLogin = async () => {
+  const success = await authStore.login(loginForm)
+  if (success) {
+    router.push("/member/dashboard")
   }
 }
+
+const handleSignup = async () => {
+  const success = await authStore.signup(signupForm)
+  if (success) {
+    router.push("/member/dashboard")
+  }
+}
+
+const handleSignOut = async () => {
+  await authStore.logout()
+  // Reset forms
+  Object.assign(loginForm, { email: "", password: "" })
+  Object.assign(signupForm, { email: "", password: "", firstName: "", lastName: "", phone: "" })
+}
+
+onMounted(async () => {
+  // Initialize auth and check if user is already logged in
+  await authStore.initializeAuth()
+  if (authStore.isAuthenticated) {
+    router.push("/member/dashboard")
+  }
+})
 </script>
+
+<style scoped>
+.member-login-page {
+  padding: 40px 20px;
+  text-align: center;
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+.page-hero {
+  margin-bottom: 40px;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  color: #c9302c;
+  margin-bottom: 20px;
+}
+
+.auth-container {
+  max-width: 400px;
+  margin: 0 auto;
+  background: #2a2a2a;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.tab-navigation {
+  display: flex;
+  margin-bottom: 30px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 12px;
+  background: #333;
+  color: #e0e0e0;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.tab-button.active {
+  background: #c9302c;
+  color: white;
+}
+
+.tab-button:hover {
+  background: #444;
+}
+
+.tab-button.active:hover {
+  background: #a02622;
+}
+
+.auth-form h2 {
+  margin-bottom: 25px;
+  color: #e0e0e0;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #e0e0e0;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #444;
+  border-radius: 5px;
+  background: #333;
+  color: #e0e0e0;
+  font-size: 16px;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #c9302c;
+  box-shadow: 0 0 0 2px rgba(201, 48, 44, 0.2);
+}
+
+.auth-button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.error-message {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid #e74c3c;
+  border-radius: 5px;
+  color: #e74c3c;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 10px;
+}
+
+.authenticated-state {
+  max-width: 500px;
+  margin: 0 auto;
+  background: #2a2a2a;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.authenticated-state h2 {
+  color: #27ae60;
+  margin-bottom: 20px;
+}
+
+.authenticated-state p {
+  color: #e0e0e0;
+  margin-bottom: 30px;
+}
+
+.auth-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.auth-actions .btn {
+  padding: 12px 24px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+</style>

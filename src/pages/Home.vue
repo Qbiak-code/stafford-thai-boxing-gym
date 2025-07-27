@@ -27,7 +27,7 @@
     <div class="container mx-auto px-4 py-16 transition-colors duration-200">
       <div class="flex flex-col md:flex-row items-center gap-12">
         <div class="md:w-1/2">
-          <h2 class="text-3xl md:text-4xl font-bold mb-6">Welcome to Stafford Muay Thai</h2>
+          <h2 class="text-3xl md:text-4xl font-bold mb-6">Welcome to Stafford Thai Boxing Gym</h2>
           <p class="text-lg leading-relaxed">
             We are more than just a gym; we are a community dedicated to the practice and philosophy
             of Muay Thai. Whether you're a complete beginner or a seasoned competitor, our

@@ -1,143 +1,437 @@
-import axios from 'axios'
+import { supabase } from '@/lib/supabase'
 import type {
-  User,
-  LoginCredentials,
-  SignupData,
   ClassSession,
   SubscriptionPlan,
   ContactForm,
-  ApiResponse
+  ApiResponse,
+  ClassBooking,
+  UserSubscription,
+  GalleryImage,
+  UserProfile
 } from '@/types'
 
-// Create axios instance with base configuration
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api',
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})
+// Additional types for events
+interface Event {
+  id: string
+  title: string
+  description: string | null
+  event_date: string
+  start_time: string | null
+  end_time: string | null
+  location: string | null
+  max_participants: number | null
+  current_participants: number | null
+  is_active: boolean | null
+  created_at: string
+}
 
-// Request interceptor to add auth token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('authToken')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
+// Helper function to handle errors consistently
+const handleError = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message
   }
-)
-
-// Response interceptor for error handling
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Handle unauthorized access
-      localStorage.removeItem('authToken')
-      window.location.href = '/member'
-    }
-    return Promise.reject(error)
+  if (typeof error === 'string') {
+    return error
   }
-)
-
-// Authentication API
-export const authAPI = {
-  async login(credentials: LoginCredentials): Promise<ApiResponse<User>> {
-    const response = await api.post('/auth/login', credentials)
-    return response.data
-  },
-
-  async signup(signupData: SignupData): Promise<ApiResponse<User>> {
-    const response = await api.post('/auth/signup', signupData)
-    return response.data
-  },
-
-  async logout(): Promise<ApiResponse<null>> {
-    const response = await api.post('/auth/logout')
-    return response.data
-  },
-
-  async verifyToken(): Promise<ApiResponse<User>> {
-    const response = await api.get('/auth/verify')
-    return response.data
-  },
-
-  async refreshToken(): Promise<ApiResponse<{ token: string }>> {
-    const response = await api.post('/auth/refresh')
-    return response.data
-  },
+  if (error && typeof error === 'object' && 'message' in error) {
+    return String(error.message)
+  }
+  return 'An unknown error occurred'
 }
 
 // Classes API
 export const classesAPI = {
   async getSchedule(): Promise<ApiResponse<ClassSession[]>> {
-    const response = await api.get('/classes/schedule')
-    return response.data
+    try {
+      const { data, error } = await supabase
+        .from('classes')
+        .select('*')
+        .eq('is_active', true)
+        .order('day_of_week', { ascending: true })
+        .order('start_time', { ascending: true })
+
+      if (error) throw error
+
+      return {
+        success: true,
+        data: data || []
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
   },
 
-  async bookClass(classId: string): Promise<ApiResponse<null>> {
-    const response = await api.post(`/classes/${classId}/book`)
-    return response.data
+  async bookClass(classId: string, bookingDate: string): Promise<ApiResponse<null>> {
+    try {
+      const { error } = await supabase
+        .from('class_bookings')
+        .insert({
+          class_id: classId,
+          user_id: (await supabase.auth.getUser()).data.user?.id,
+          booking_date: bookingDate,
+          status: 'confirmed'
+        })
+
+      if (error) throw error
+
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
   },
 
-  async cancelBooking(classId: string): Promise<ApiResponse<null>> {
-    const response = await api.delete(`/classes/${classId}/book`)
-    return response.data
+  async cancelBooking(bookingId: string): Promise<ApiResponse<null>> {
+    try {
+      const { error } = await supabase
+        .from('class_bookings')
+        .update({ status: 'cancelled' })
+        .eq('id', bookingId)
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+
+      if (error) throw error
+
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
   },
 
-  async getUserBookings(): Promise<ApiResponse<ClassSession[]>> {
-    const response = await api.get('/classes/bookings')
-    return response.data
+  async getUserBookings(): Promise<ApiResponse<ClassBooking[]>> {
+    try {
+      const { data, error } = await supabase
+        .from('class_bookings')
+        .select(`
+          *,
+          class:classes(*)
+        `)
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('status', 'confirmed')
+        .gte('booking_date', new Date().toISOString().split('T')[0])
+        .order('booking_date', { ascending: true })
+
+      if (error) throw error
+
+      return {
+        success: true,
+        data: data || []
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
   },
+
+  async getWeeklySchedule(): Promise<ApiResponse<ClassSession[]>> {
+    try {
+      const { data, error } = await supabase
+        .from('weekly_schedule')
+        .select('*')
+
+      if (error) throw error
+
+      return {
+        success: true,
+        data: data || []
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
+  }
 }
 
 // Subscriptions API
 export const subscriptionsAPI = {
   async getPlans(): Promise<ApiResponse<SubscriptionPlan[]>> {
-    const response = await api.get('/subscriptions/plans')
-    return response.data
+    try {
+      const { data, error } = await supabase
+        .from('subscription_plans')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true })
+
+      if (error) throw error
+
+      return {
+        success: true,
+        data: data || []
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
+  },
+
+  async getUserSubscription(): Promise<ApiResponse<UserSubscription | null>> {
+    try {
+      const { data, error } = await supabase
+        .from('user_subscriptions')
+        .select(`
+          *,
+          plan:subscription_plans(*)
+        `)
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('status', 'active')
+        .single()
+
+      if (error && error.code !== 'PGRST116') throw error // PGRST116 = not found
+
+      return {
+        success: true,
+        data: data || null
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
   },
 
   async createPaymentIntent(planId: string): Promise<ApiResponse<{ clientSecret: string }>> {
-    const response = await api.post('/subscriptions/payment-intent', { planId })
-    return response.data
+    try {
+      // This will need to call a Supabase Edge Function for Stripe integration
+      // For now, return a mock response
+      return {
+        success: true,
+        data: { clientSecret: 'mock_client_secret' }
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
   },
 
   async confirmSubscription(paymentIntentId: string): Promise<ApiResponse<null>> {
-    const response = await api.post('/subscriptions/confirm', { paymentIntentId })
-    return response.data
-  },
-
-  async getUserSubscription(): Promise<ApiResponse<SubscriptionPlan | null>> {
-    const response = await api.get('/subscriptions/user')
-    return response.data
+    try {
+      // This will need to call a Supabase Edge Function for Stripe integration
+      // For now, return success
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
   },
 
   async cancelSubscription(): Promise<ApiResponse<null>> {
-    const response = await api.delete('/subscriptions/user')
-    return response.data
-  },
+    try {
+      const { error } = await supabase
+        .from('user_subscriptions')
+        .update({
+          status: 'cancelled',
+          cancelled_at: new Date().toISOString()
+        })
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('status', 'active')
+
+      if (error) throw error
+
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
+  }
 }
 
 // Contact API
 export const contactAPI = {
   async submitForm(formData: ContactForm): Promise<ApiResponse<null>> {
-    const response = await api.post('/contact', formData)
-    return response.data
+    try {
+      const { error } = await supabase
+        .from('contact_submissions')
+        .insert({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+          subject: formData.subject || null,
+          message: formData.message,
+          marketing_consent: formData.consent_marketing || false,
+          gdpr_consent: true
+        })
+
+      if (error) throw error
+
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
+  }
+}
+
+// Gallery API
+export const galleryAPI = {
+  async getImages(): Promise<ApiResponse<GalleryImage[]>> {
+    try {
+      const { data, error } = await supabase
+        .from('gallery_images')
+        .select('*')
+        .order('is_featured', { ascending: false })
+        .order('sort_order', { ascending: true })
+
+      if (error) throw error
+
+      return {
+        success: true,
+        data: data || []
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
   },
+
+  async getFeaturedImages(): Promise<ApiResponse<GalleryImage[]>> {
+    try {
+      const { data, error } = await supabase
+        .from('gallery_images')
+        .select('*')
+        .eq('is_featured', true)
+        .order('sort_order', { ascending: true })
+        .limit(6)
+
+      if (error) throw error
+
+      return {
+        success: true,
+        data: data || []
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
+  }
+}
+
+// Events API
+export const eventsAPI = {
+  async getUpcomingEvents(): Promise<ApiResponse<Event[]>> {
+    try {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .gte('event_date', new Date().toISOString().split('T')[0])
+        .order('event_date', { ascending: true })
+        .limit(10)
+
+      if (error) throw error
+
+      return {
+        success: true,
+        data: data || []
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
+  }
+}
+
+// Profile API
+export const profileAPI = {
+  async updateProfile(profileData: Partial<UserProfile>): Promise<ApiResponse<null>> {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          ...profileData,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', (await supabase.auth.getUser()).data.user?.id)
+
+      if (error) throw error
+
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
+  },
+
+  async getProfile(): Promise<ApiResponse<UserProfile>> {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', (await supabase.auth.getUser()).data.user?.id)
+        .single()
+
+      if (error) throw error
+
+      return {
+        success: true,
+        data: data
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
+  }
 }
 
 // Health check
 export const healthAPI = {
   async check(): Promise<ApiResponse<{ status: string }>> {
-    const response = await api.get('/health')
-    return response.data
-  },
+    try {
+      // Simple query to check if database is accessible
+      const { error } = await supabase.from('subscription_plans').select('id').limit(1)
+
+      if (error) throw error
+
+      return {
+        success: true,
+        data: { status: 'healthy' }
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error),
+        data: { status: 'unhealthy' }
+      }
+    }
+  }
 }
 
-export default api
+export default {
+  classes: classesAPI,
+  subscriptions: subscriptionsAPI,
+  contact: contactAPI,
+  gallery: galleryAPI,
+  events: eventsAPI,
+  profile: profileAPI,
+  health: healthAPI
+}
