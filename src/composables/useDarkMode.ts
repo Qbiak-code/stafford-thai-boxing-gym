@@ -1,53 +1,54 @@
-import { ref, computed, watch } from "vue"
+import { ref, computed } from "vue"
 
-const isDark = ref(false)
+const isDark = ref(true) // Default to dark mode
 
 export function useDarkMode() {
-  // Initialize dark mode from localStorage or system preference
-  const initializeDarkMode = () => {
-    const stored = localStorage.getItem("darkMode")
+  // Initialize theme from localStorage or default to dark
+  const initializeTheme = () => {
+    const stored = localStorage.getItem("theme")
     if (stored !== null) {
-      isDark.value = JSON.parse(stored)
+      isDark.value = stored === "dark"
     } else {
-      // Check system preference
-      isDark.value = window.matchMedia("(prefers-color-scheme: dark)").matches
+      // Default to dark mode for our app
+      isDark.value = true
     }
-    updateDomClass()
+    updateBodyClass()
   }
 
-  // Update DOM class
-  const updateDomClass = () => {
-    const htmlElement = document.documentElement
+  // Update body class for theme
+  const updateBodyClass = () => {
+    const body = document.body
     if (isDark.value) {
-      htmlElement.classList.add("dark")
+      body.classList.remove("light-mode")
+      // Default is dark mode (no class needed)
     } else {
-      htmlElement.classList.remove("dark")
+      body.classList.add("light-mode")
     }
   }
 
-  // Toggle dark mode
-  const toggleDarkMode = () => {
+  // Toggle between light and dark
+  const toggleTheme = () => {
     isDark.value = !isDark.value
-    localStorage.setItem("darkMode", JSON.stringify(isDark.value))
-    updateDomClass()
+    localStorage.setItem("theme", isDark.value ? "dark" : "light")
+    updateBodyClass()
   }
 
-  // Set dark mode explicitly
-  const setDarkMode = (value: boolean) => {
-    isDark.value = value
-    localStorage.setItem("darkMode", JSON.stringify(value))
-    updateDomClass()
+  // Set theme explicitly
+  const setTheme = (theme: "light" | "dark") => {
+    isDark.value = theme === "dark"
+    localStorage.setItem("theme", theme)
+    updateBodyClass()
   }
 
   // Auto-initialize when composable is used
   if (typeof window !== "undefined") {
-    initializeDarkMode()
+    initializeTheme()
   }
 
   return {
     isDark: computed(() => isDark.value),
-    toggleDarkMode,
-    setDarkMode,
-    initializeDarkMode,
+    toggleTheme,
+    setTheme,
+    initializeTheme,
   }
 }

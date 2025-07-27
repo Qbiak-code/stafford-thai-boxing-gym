@@ -32,6 +32,17 @@ export default {
           900: '#7f1d1d',
           950: '#450a0a',
         },
+        // Add our custom toned-down colors
+        'firebrick': {
+          500: '#B22222',
+          600: '#8B1A1A',
+          700: '#722020',
+        },
+        'goldenrod': {
+          400: '#DAA520',
+          500: '#B8860B',
+          600: '#996F00',
+        }
       },
       fontFamily: {
         sans: ['Roboto', 'system-ui', 'sans-serif'],
@@ -40,11 +51,16 @@ export default {
       animation: {
         float: 'float 6s ease-in-out infinite',
         'pulse-soft': 'pulse 3s ease-in-out infinite',
+        'gradient-shift': 'gradientShift 3s ease-in-out infinite',
       },
       keyframes: {
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-10px)' },
+        },
+        gradientShift: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
         },
       },
     },
