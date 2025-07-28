@@ -149,7 +149,11 @@
           <!-- Image -->
           <div class="welcome-image">
             <div class="image-container">
-              <img src="https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images//colynary-media-inAxUskIN-I-unsplash.jpg" alt="Muay Thai Training" class="hero-image" />
+              <img
+                src="https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images//colynary-media-inAxUskIN-I-unsplash.jpg"
+                alt="Muay Thai Training"
+                class="hero-image"
+              />
             </div>
           </div>
         </div>
@@ -240,7 +244,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue"
 import { gsap } from "gsap"
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from "@/stores/auth"
 const authStore = useAuthStore()
 
 const headline = ref<HTMLElement | null>(null)
@@ -561,6 +565,7 @@ onMounted(() => {
 .hero-section {
   background:
     linear-gradient(135deg, var(--bg-primary), rgba(28, 28, 28, 0.3)),
-    url("https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images//hero-bg.jpg") center/cover;
+    url("https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images//hero-bg.jpg")
+      center/cover;
 }
 </style>

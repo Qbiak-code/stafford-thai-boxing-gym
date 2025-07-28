@@ -52,7 +52,7 @@ export interface UserSubscription {
   id: string
   user_id: string
   plan_id: string
-  status: 'active' | 'inactive' | 'cancelled' | 'pending'
+  status: "active" | "inactive" | "cancelled" | "pending"
   start_date: string
   end_date: string | null
   stripe_subscription_id: string | null
@@ -71,7 +71,7 @@ export interface ClassSession {
   end_time: string
   max_capacity: number | null
   description: string | null
-  class_type: 'group' | 'private' | null
+  class_type: "group" | "private" | null
   is_active: boolean | null
   created_at: string
 }
@@ -81,7 +81,7 @@ export interface ClassBooking {
   user_id: string
   class_id: string
   booking_date: string
-  status: 'confirmed' | 'cancelled'
+  status: "confirmed" | "cancelled"
   created_at: string
   class?: ClassSession // Populated via join
 }
@@ -103,7 +103,7 @@ export interface ContactSubmission {
   phone: string | null
   subject: string | null
   message: string
-  status: 'new' | 'read' | 'replied'
+  status: "new" | "read" | "replied"
   created_at: string
 }
 
@@ -169,12 +169,12 @@ export interface UKAddress {
   city: string
   county?: string
   postcode: string
-  country: 'GB'
+  country: "GB"
 }
 
 export interface UKPhoneNumber {
   number: string
-  country_code: '+44'
+  country_code: "+44"
   is_mobile: boolean
 }
 
@@ -224,7 +224,7 @@ export interface AdminDashboardStats {
 export interface AdminUser {
   id: string
   email: string
-  role: 'admin' | 'instructor' | 'staff'
+  role: "admin" | "instructor" | "staff"
   permissions: string[]
   created_at: string
 }
@@ -233,7 +233,7 @@ export interface AdminUser {
 export interface Notification {
   id: string
   user_id: string
-  type: 'booking_confirmation' | 'payment_success' | 'class_cancelled' | 'membership_expiry'
+  type: "booking_confirmation" | "payment_success" | "class_cancelled" | "membership_expiry"
   title: string
   message: string
   read: boolean
@@ -264,11 +264,11 @@ export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>
 
 // Database row types (for Supabase)
 export type DatabaseRow<T> = T
-export type DatabaseInsert<T> = Omit<T, 'id' | 'created_at' | 'updated_at'> & {
+export type DatabaseInsert<T> = Omit<T, "id" | "created_at" | "updated_at"> & {
   id?: string
   created_at?: string
   updated_at?: string
 }
-export type DatabaseUpdate<T> = Partial<Omit<T, 'id' | 'created_at'>> & {
+export type DatabaseUpdate<T> = Partial<Omit<T, "id" | "created_at">> & {
   updated_at?: string
 }

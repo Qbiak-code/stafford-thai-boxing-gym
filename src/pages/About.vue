@@ -13,13 +13,14 @@
           <div class="story-text">
             <h2>Our Story</h2>
             <p class="lead-text">
-              Founded with a passion for the sport and a desire to build a strong, supportive community,
-              Stafford Thaiboxing Gym has become the heart of martial arts training in Staffordshire.
+              Founded with a passion for the sport and a desire to build a strong, supportive
+              community, Stafford Thaiboxing Gym has become the heart of martial arts training in
+              Staffordshire.
             </p>
             <p class="supporting-text">
-              We believe that Muay Thai is for everyone, regardless of age, gender, or fitness level.
-              Our mission is to provide the highest quality instruction in a safe and welcoming environment
-              where every member can achieve their personal goals.
+              We believe that Muay Thai is for everyone, regardless of age, gender, or fitness
+              level. Our mission is to provide the highest quality instruction in a safe and
+              welcoming environment where every member can achieve their personal goals.
             </p>
 
             <!-- Story Stats -->
@@ -57,11 +58,7 @@
         </div>
 
         <div class="coaches-grid">
-          <div
-            v-for="coach in coaches"
-            :key="coach.name"
-            class="coach-card"
-          >
+          <div v-for="coach in coaches" :key="coach.name" class="coach-card">
             <div class="coach-image">
               <img :src="coach.img" :alt="coach.name" />
             </div>
@@ -99,7 +96,12 @@
           <div class="value-card">
             <div class="value-icon">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
               </svg>
             </div>
             <h3>Community</h3>
@@ -109,7 +111,12 @@
           <div class="value-card">
             <div class="value-icon">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
               </svg>
             </div>
             <h3>Excellence</h3>
@@ -119,7 +126,12 @@
           <div class="value-card">
             <div class="value-icon">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
               </svg>
             </div>
             <h3>Respect</h3>
@@ -129,7 +141,12 @@
           <div class="value-card">
             <div class="value-icon">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <h3>Safety</h3>
@@ -147,9 +164,7 @@
             <router-link to="/contact" class="btn btn-primary btn-lg">
               Book Trial Class
             </router-link>
-            <router-link to="/timetable" class="btn btn-ghost btn-lg">
-              View Classes
-            </router-link>
+            <router-link to="/timetable" class="btn btn-ghost btn-lg"> View Classes </router-link>
           </div>
         </div>
       </div>
@@ -162,7 +177,8 @@ const coaches = [
   {
     name: "John Wincott",
     title: "Head Coach & Founder",
-    bio: "With over 27 years of experience in Muay Thai, I’ve dedicated my life to mastering and sharing the art of eight limbs. As a former professional fighter ranked in the top ten in Britain and a past champion, I bring both competitive pedigree and a deep passion for the sport to every session.\n" +
+    bio:
+      "With over 27 years of experience in Muay Thai, I’ve dedicated my life to mastering and sharing the art of eight limbs. As a former professional fighter ranked in the top ten in Britain and a past champion, I bring both competitive pedigree and a deep passion for the sport to every session.\n" +
       "\n" +
       "I originally took over the gym as a non-profit, community-focused space, driven by the desire to give back to the sport that shaped me. Over time, I realised that doing what I love full-time was the only path forward. Today, Stafford Thaiboxing Gym is my business, my passion, and my mission.\n" +
       "\n" +
@@ -170,8 +186,14 @@ const coaches = [
       "\n" +
       "We welcome juniors aged 8–15 and adults of all levels. Whatever your goals, we’ll help you reach them.",
     img: "https://picsum.photos/id/1005/400/400",
-    specialties: ["Beginner Training", "Women's Classes", "Fitness Conditioning", "Competition Prep", "Technique Development"]
-  }
+    specialties: [
+      "Beginner Training",
+      "Women's Classes",
+      "Fitness Conditioning",
+      "Competition Prep",
+      "Technique Development",
+    ],
+  },
 ]
 </script>
 

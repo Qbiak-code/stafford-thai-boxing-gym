@@ -50,7 +50,11 @@
                 class="form-input"
               />
             </div>
-            <button type="submit" class="btn btn-primary btn-lg auth-button" :disabled="authStore.isLoading">
+            <button
+              type="submit"
+              class="btn btn-primary btn-lg auth-button"
+              :disabled="authStore.isLoading"
+            >
               {{ authStore.isLoading ? "Signing In..." : "Sign In" }}
             </button>
           </form>
@@ -116,7 +120,11 @@
                 class="form-input"
               />
             </div>
-            <button type="submit" class="btn btn-primary btn-lg auth-button" :disabled="authStore.isLoading">
+            <button
+              type="submit"
+              class="btn btn-primary btn-lg auth-button"
+              :disabled="authStore.isLoading"
+            >
               {{ authStore.isLoading ? "Creating Account..." : "Create Account" }}
             </button>
           </form>
@@ -133,21 +141,31 @@
       <div v-if="emailConfirmationSent" class="confirmation-message">
         <div class="confirmation-icon">
           <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+            />
           </svg>
         </div>
         <h2>Check Your Email</h2>
         <div class="confirmation-content">
           <p>We've sent a confirmation link to:</p>
           <p class="email-highlight">{{ confirmationEmail }}</p>
-          <p>Please click the link in your email to activate your account, then return here to log in.</p>
+          <p>
+            Please click the link in your email to activate your account, then return here to log
+            in.
+          </p>
 
           <div class="confirmation-actions">
-            <button @click="backToLogin" class="btn btn-primary">
-              Back to Login
-            </button>
-            <button @click="resendConfirmation" class="btn btn-ghost" :disabled="resendCooldown > 0">
-              {{ resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend Email' }}
+            <button @click="backToLogin" class="btn btn-primary">Back to Login</button>
+            <button
+              @click="resendConfirmation"
+              class="btn btn-ghost"
+              :disabled="resendCooldown > 0"
+            >
+              {{ resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend Email" }}
             </button>
           </div>
         </div>
@@ -175,10 +193,10 @@ const authStore = useAuthStore()
 const router = useRouter()
 
 const emailConfirmationSent = ref(false)
-const confirmationEmail = ref('')
+const confirmationEmail = ref("")
 const resendCooldown = ref(0)
 
-const activeTab = ref<'login' | 'signup'>('login')
+const activeTab = ref<"login" | "signup">("login")
 
 const loginForm = reactive<LoginCredentials>({
   email: "",
@@ -204,7 +222,7 @@ const handleSignup = async () => {
   const success = await authStore.signup(signupForm)
 
   if (!success) {
-    if (authStore.error?.includes('check your email')) {
+    if (authStore.error?.includes("check your email")) {
       emailConfirmationSent.value = true
       confirmationEmail.value = signupForm.email
       authStore.clearError()
@@ -219,8 +237,8 @@ const resendConfirmation = async () => {
 
   try {
     await supabase.auth.resend({
-      type: 'signup',
-      email: confirmationEmail.value
+      type: "signup",
+      email: confirmationEmail.value,
     })
 
     resendCooldown.value = 60
@@ -231,14 +249,14 @@ const resendConfirmation = async () => {
       }
     }, 1000)
   } catch (err) {
-    console.error('Failed to resend confirmation:', err)
+    console.error("Failed to resend confirmation:", err)
   }
 }
 
 const backToLogin = () => {
   emailConfirmationSent.value = false
-  confirmationEmail.value = ''
-  activeTab.value = 'login'
+  confirmationEmail.value = ""
+  activeTab.value = "login"
   Object.assign(signupForm, { email: "", password: "", firstName: "", lastName: "", phone: "" })
 }
 
@@ -249,11 +267,14 @@ onMounted(async () => {
   }
 })
 
-watch(() => authStore.isAuthenticated, (isAuthenticated) => {
-  if (isAuthenticated) {
-    router.push("/member/dashboard")
-  }
-})
+watch(
+  () => authStore.isAuthenticated,
+  (isAuthenticated) => {
+    if (isAuthenticated) {
+      router.push("/member/dashboard")
+    }
+  },
+)
 </script>
 
 <style scoped>
@@ -475,8 +496,12 @@ watch(() => authStore.isAuthenticated, (isAuthenticated) => {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-message h2 {

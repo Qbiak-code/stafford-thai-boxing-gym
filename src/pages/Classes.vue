@@ -13,9 +13,9 @@
           <div class="hero-text">
             <h2>Train With Us</h2>
             <p>
-              We offer a variety of Muay Thai classes suitable for all fitness levels and experience.
-              Whether you're a complete beginner or an experienced fighter, our expert instructors will
-              guide you on your martial arts journey.
+              We offer a variety of Muay Thai classes suitable for all fitness levels and
+              experience. Whether you're a complete beginner or an experienced fighter, our expert
+              instructors will guide you on your martial arts journey.
             </p>
             <div class="hero-stats">
               <div class="stat-item">
@@ -50,11 +50,7 @@
         </div>
 
         <div class="classes-grid">
-          <div
-            v-for="classType in classes"
-            :key="classType.id"
-            class="class-card"
-          >
+          <div v-for="classType in classes" :key="classType.id" class="class-card">
             <div class="class-image">
               <img :src="classType.img" :alt="classType.name" />
               <div class="class-level-badge" :class="getLevelClass(classType.level)">
@@ -70,7 +66,12 @@
                 <div class="detail-item">
                   <div class="detail-icon">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                   </div>
                   <div class="detail-info">
@@ -82,7 +83,12 @@
                 <div class="detail-item">
                   <div class="detail-icon">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
                     </svg>
                   </div>
                   <div class="detail-info">
@@ -105,9 +111,7 @@
             <router-link to="/contact" class="btn btn-primary btn-lg">
               Book Trial Class
             </router-link>
-            <router-link to="/timetable" class="btn btn-ghost btn-lg">
-              View Timetable
-            </router-link>
+            <router-link to="/timetable" class="btn btn-ghost btn-lg"> View Timetable </router-link>
           </div>
         </div>
       </div>
@@ -121,7 +125,8 @@ const classes = [
     id: 1,
     name: "Beginner Muay Thai",
     level: "Beginner",
-    description: "Perfect for those new to Muay Thai. Learn basic techniques, stance, and conditioning in a supportive environment.",
+    description:
+      "Perfect for those new to Muay Thai. Learn basic techniques, stance, and conditioning in a supportive environment.",
     duration: "60 minutes",
     schedule: "Mon, Wed, Fri - 6:00 PM",
     img: "https://picsum.photos/id/1005/400/300",
@@ -130,7 +135,8 @@ const classes = [
     id: 2,
     name: "Intermediate Training",
     level: "Intermediate",
-    description: "Build on your foundation with advanced combinations, sparring drills, and intensive conditioning.",
+    description:
+      "Build on your foundation with advanced combinations, sparring drills, and intensive conditioning.",
     duration: "75 minutes",
     schedule: "Tue, Thu - 7:00 PM",
     img: "https://picsum.photos/id/1011/400/300",
@@ -139,7 +145,8 @@ const classes = [
     id: 3,
     name: "Advanced Fighter Training",
     level: "Advanced",
-    description: "High-intensity training for experienced practitioners. Includes sparring, competition prep, and advanced techniques.",
+    description:
+      "High-intensity training for experienced practitioners. Includes sparring, competition prep, and advanced techniques.",
     duration: "90 minutes",
     schedule: "Sat - 10:00 AM",
     img: "https://picsum.photos/id/1025/400/300",
@@ -148,7 +155,8 @@ const classes = [
     id: 4,
     name: "Kids Muay Thai",
     level: "Ages 8-16",
-    description: "Fun and safe introduction to Muay Thai for young athletes. Focus on discipline, fitness, and basic techniques.",
+    description:
+      "Fun and safe introduction to Muay Thai for young athletes. Focus on discipline, fitness, and basic techniques.",
     duration: "45 minutes",
     schedule: "Sat - 2:00 PM",
     img: "https://picsum.photos/id/1015/400/300",
@@ -157,7 +165,8 @@ const classes = [
     id: 5,
     name: "Fitness Kickboxing",
     level: "All Levels",
-    description: "High-energy cardio workout using Muay Thai techniques. Great for fitness without the contact.",
+    description:
+      "High-energy cardio workout using Muay Thai techniques. Great for fitness without the contact.",
     duration: "50 minutes",
     schedule: "Mon, Wed, Fri - 8:00 AM",
     img: "https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images//roman-aguila-nfZKyKlGujs-unsplash.jpg",
@@ -174,11 +183,11 @@ const classes = [
 ]
 
 const getLevelClass = (level: string) => {
-  if (level.includes('Beginner')) return 'level-beginner'
-  if (level.includes('Intermediate')) return 'level-intermediate'
-  if (level.includes('Advanced')) return 'level-advanced'
-  if (level.includes('Ages')) return 'level-kids'
-  return 'level-all'
+  if (level.includes("Beginner")) return "level-beginner"
+  if (level.includes("Intermediate")) return "level-intermediate"
+  if (level.includes("Advanced")) return "level-advanced"
+  if (level.includes("Ages")) return "level-kids"
+  return "level-all"
 }
 </script>
 

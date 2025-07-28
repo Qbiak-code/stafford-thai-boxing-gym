@@ -1,23 +1,20 @@
 <!-- src/components/Modal.vue -->
 <template>
   <teleport to="body">
-    <div
-      v-if="modalState.isOpen"
-      class="modal-overlay"
-      @click="handleOverlayClick"
-    >
+    <div v-if="modalState.isOpen" class="modal-overlay" @click="handleOverlayClick">
       <div class="modal-container" @click.stop>
         <div class="modal-content" :class="modalVariantClass">
           <!-- Modal Header -->
           <div class="modal-header" v-if="modalState.title">
             <h3 class="modal-title">{{ modalState.title }}</h3>
-            <button
-              @click="closeModal(false)"
-              class="modal-close"
-              aria-label="Close modal"
-            >
+            <button @click="closeModal(false)" class="modal-close" aria-label="Close modal">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -29,28 +26,48 @@
               <!-- Danger/Delete Icon -->
               <div v-if="modalState.variant === 'danger'" class="icon-danger">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
                 </svg>
               </div>
 
               <!-- Warning Icon -->
               <div v-else-if="modalState.variant === 'warning'" class="icon-warning">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </div>
 
               <!-- Info Icon -->
               <div v-else-if="modalState.variant === 'info'" class="icon-info">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </div>
 
               <!-- Primary/Default Icon -->
               <div v-else class="icon-primary">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </div>
             </div>
@@ -63,18 +80,10 @@
 
           <!-- Modal Footer -->
           <div class="modal-footer">
-            <button
-              v-if="modalState.showCancel"
-              @click="closeModal(false)"
-              class="btn btn-ghost"
-            >
+            <button v-if="modalState.showCancel" @click="closeModal(false)" class="btn btn-ghost">
               {{ modalState.cancelText }}
             </button>
-            <button
-              @click="closeModal(true)"
-              class="btn"
-              :class="confirmButtonClass"
-            >
+            <button @click="closeModal(true)" class="btn" :class="confirmButtonClass">
               {{ modalState.confirmText }}
             </button>
           </div>
@@ -85,12 +94,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from 'vue'
-import { useModal } from '@/composables/useModal'
+import { computed, onMounted, onUnmounted } from "vue"
+import { useModal } from "@/composables/useModal"
 
 const { modalState, closeModal } = useModal()
 
-const showIcon = computed(() => modalState.type === 'confirm' || modalState.variant !== 'primary')
+const showIcon = computed(() => modalState.type === "confirm" || modalState.variant !== "primary")
 
 const modalVariantClass = computed(() => {
   return `modal-variant-${modalState.variant}`
@@ -98,38 +107,38 @@ const modalVariantClass = computed(() => {
 
 const confirmButtonClass = computed(() => {
   switch (modalState.variant) {
-    case 'danger':
-      return 'btn-secondary'
-    case 'warning':
-      return 'btn btn-primary'
-    case 'info':
-      return 'btn-primary'
+    case "danger":
+      return "btn-secondary"
+    case "warning":
+      return "btn btn-primary"
+    case "info":
+      return "btn-primary"
     default:
-      return 'btn-primary'
+      return "btn-primary"
   }
 })
 
 const handleOverlayClick = () => {
   // Only close on overlay click for alerts, not confirms
-  if (modalState.type === 'alert') {
+  if (modalState.type === "alert") {
     closeModal(false)
   }
 }
 
 // Handle ESC key
 const handleKeyDown = (event: KeyboardEvent) => {
-  if (event.key === 'Escape' && modalState.isOpen) {
+  if (event.key === "Escape" && modalState.isOpen) {
     closeModal(false)
   }
 }
 
 // Add/remove event listeners
 onMounted(() => {
-  document.addEventListener('keydown', handleKeyDown)
+  document.addEventListener("keydown", handleKeyDown)
 })
 
 onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeyDown)
+  document.removeEventListener("keydown", handleKeyDown)
 })
 </script>
 

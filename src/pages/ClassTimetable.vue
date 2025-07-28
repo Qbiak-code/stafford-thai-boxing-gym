@@ -12,9 +12,7 @@
       <!-- Error State -->
       <div v-if="error" class="error-state">
         <p><strong>Error:</strong> {{ error }}</p>
-        <button @click="loadClasses" class="btn btn-ghost btn-sm">
-          Try again
-        </button>
+        <button @click="loadClasses" class="btn btn-ghost btn-sm">Try again</button>
       </div>
 
       <!-- Weekly Schedule -->
@@ -23,10 +21,7 @@
         <div class="filter-section">
           <h3>Filter Classes:</h3>
           <div class="filter-dropdown-container">
-            <select
-              v-model="classTypeFilter"
-              class="filter-dropdown"
-            >
+            <select v-model="classTypeFilter" class="filter-dropdown">
               <option value="all">All Classes</option>
               <option value="adult">Adult Classes</option>
               <option value="junior">Junior Classes</option>
@@ -38,20 +33,12 @@
         </div>
 
         <div class="timetable-grid">
-          <div
-            v-for="dayIndex in [1, 2, 3, 4, 5, 6, 7]"
-            :key="dayIndex"
-            class="day-column"
-          >
+          <div v-for="dayIndex in [1, 2, 3, 4, 5, 6, 7]" :key="dayIndex" class="day-column">
             <!-- Day Header -->
             <div class="day-header">
               <h3>{{ weekDays[dayIndex] }}</h3>
               <div class="day-dates">
-                <span
-                  v-for="date in getNext7DatesForDay(dayIndex)"
-                  :key="date"
-                  class="day-date"
-                >
+                <span v-for="date in getNext7DatesForDay(dayIndex)" :key="date" class="day-date">
                   {{ formatDayDate(date) }}
                 </span>
               </div>
@@ -75,10 +62,25 @@
                   </p>
 
                   <!-- Booking indicators -->
-                  <div v-if="authStore.isAuthenticated && getBookedDatesForClass(classItem.id).length > 0" class="booking-indicators">
+                  <div
+                    v-if="
+                      authStore.isAuthenticated && getBookedDatesForClass(classItem.id).length > 0
+                    "
+                    class="booking-indicators"
+                  >
                     <div class="booking-badge">
-                      <svg class="booking-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg
+                        class="booking-icon"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
                       </svg>
                       <span>{{ getBookedDatesForClass(classItem.id).length }} booked</span>
                     </div>
@@ -137,9 +139,7 @@
         <!-- Call to Action -->
         <div class="cta-section">
           <h3>Ready to Join a Class?</h3>
-          <p>
-            Book your first session and start your Muay Thai journey today
-          </p>
+          <p>Book your first session and start your Muay Thai journey today</p>
           <div class="cta-buttons">
             <router-link to="/contact" class="btn btn-primary btn-lg">
               Book Trial Class
@@ -151,11 +151,7 @@
             >
               Join as Member
             </router-link>
-            <router-link
-              v-else
-              to="/member/dashboard"
-              class="btn btn-ghost btn-lg"
-            >
+            <router-link v-else to="/member/dashboard" class="btn btn-ghost btn-lg">
               Member Dashboard
             </router-link>
           </div>
@@ -169,7 +165,12 @@
             <h3>Book a Class</h3>
             <button @click="closeBookingModal" class="close-button">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
               </svg>
             </button>
           </div>
@@ -195,26 +196,50 @@
                   :key="classOption.id"
                   class="class-option"
                   :class="{
-                    'selected': selectedClassForBooking?.id === classOption.id,
-                    'disabled': isClassBookedForDate(classOption.id, selectedBookingDate)
+                    selected: selectedClassForBooking?.id === classOption.id,
+                    disabled: isClassBookedForDate(classOption.id, selectedBookingDate),
                   }"
-                  @click="!isClassBookedForDate(classOption.id, selectedBookingDate) && selectClass(classOption)"
+                  @click="
+                    !isClassBookedForDate(classOption.id, selectedBookingDate) &&
+                    selectClass(classOption)
+                  "
                 >
                   <div class="class-option-info">
                     <h4>{{ classOption.name }}</h4>
-                    <p>{{ formatTime(classOption.start_time) }} - {{ formatTime(classOption.end_time) }}</p>
-                    <p class="instructor" v-if="classOption.instructor">{{ classOption.instructor }}</p>
+                    <p>
+                      {{ formatTime(classOption.start_time) }} -
+                      {{ formatTime(classOption.end_time) }}
+                    </p>
+                    <p class="instructor" v-if="classOption.instructor">
+                      {{ classOption.instructor }}
+                    </p>
 
                     <!-- Already booked indicator -->
-                    <div v-if="isClassBookedForDate(classOption.id, selectedBookingDate)" class="already-booked">
-                      <svg class="booked-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <div
+                      v-if="isClassBookedForDate(classOption.id, selectedBookingDate)"
+                      class="already-booked"
+                    >
+                      <svg
+                        class="booked-icon"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
                       </svg>
                       <span>Already booked</span>
                     </div>
                   </div>
                   <div class="class-option-select">
-                    <div class="radio-button" :class="{ 'selected': selectedClassForBooking?.id === classOption.id }"></div>
+                    <div
+                      class="radio-button"
+                      :class="{ selected: selectedClassForBooking?.id === classOption.id }"
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -229,18 +254,20 @@
                 :disabled="bookingLoading || !selectedBookingDate || !selectedClassForBooking"
                 class="btn btn-primary"
               >
-                {{ bookingLoading ? 'Booking...' : 'Confirm Booking' }}
+                {{ bookingLoading ? "Booking..." : "Confirm Booking" }}
               </button>
-              <button
-                @click="closeBookingModal"
-                class="btn btn-ghost"
-              >
-                Cancel
-              </button>
+              <button @click="closeBookingModal" class="btn btn-ghost">Cancel</button>
             </div>
 
             <!-- Show message when no class is selected -->
-            <div v-if="selectedBookingDate && availableClassesForDate.length > 0 && !selectedClassForBooking" class="selection-hint">
+            <div
+              v-if="
+                selectedBookingDate &&
+                availableClassesForDate.length > 0 &&
+                !selectedClassForBooking
+              "
+              class="selection-hint"
+            >
               <p>Please select a class above to continue</p>
             </div>
 
@@ -255,11 +282,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { classesAPI } from '@/services/api'
-import { useAuthStore } from '@/stores/auth'
-import { useModal } from '@/composables/useModal'
-import type { ClassSession, ClassBooking } from '@/types'
+import { ref, computed, onMounted } from "vue"
+import { classesAPI } from "@/services/api"
+import { useAuthStore } from "@/stores/auth"
+import { useModal } from "@/composables/useModal"
+import type { ClassSession, ClassBooking } from "@/types"
 
 const authStore = useAuthStore()
 const { confirm, alert } = useModal()
@@ -269,38 +296,38 @@ const classes = ref<ClassSession[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 const selectedClass = ref<ClassSession | null>(null)
-const classTypeFilter = ref<'all' | 'adult' | 'junior' | 'ladies' | 'advanced' | 'private'>('all') // Updated filter state
+const classTypeFilter = ref<"all" | "adult" | "junior" | "ladies" | "advanced" | "private">("all") // Updated filter state
 
 // Booking state
 const showBookingModal = ref(false)
 const selectedClassForBooking = ref<ClassSession | null>(null)
-const selectedBookingDate = ref('')
+const selectedBookingDate = ref("")
 const bookingLoading = ref(false)
 const bookingError = ref<string | null>(null)
 const userBookings = ref<ClassBooking[]>([]) // Track user's bookings
 
 // Week days (1 = Monday, 2 = Tuesday, ..., 7 = Sunday)
-const weekDays = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+const weekDays = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 // Today's date and 7-day limit for booking
-const today = new Date().toISOString().split('T')[0]
+const today = new Date().toISOString().split("T")[0]
 const maxBookingDate = new Date()
 maxBookingDate.setDate(maxBookingDate.getDate() + 6)
-const maxBookingDateString = maxBookingDate.toISOString().split('T')[0]
+const maxBookingDateString = maxBookingDate.toISOString().split("T")[0]
 
 // Computed properties
 const uniqueDifficultyLevels = computed(() => {
-  const levels = classes.value.map(c => c.difficulty_level).filter(Boolean)
+  const levels = classes.value.map((c) => c.difficulty_level).filter(Boolean)
   return [...new Set(levels)]
 })
 
 const uniqueInstructors = computed(() => {
-  const instructors = classes.value.map(c => c.instructor).filter(Boolean)
+  const instructors = classes.value.map((c) => c.instructor).filter(Boolean)
   return [...new Set(instructors)]
 })
 
 const filteredClassesCount = computed(() => {
-  return classes.value.filter(classItem => classItem.class_type !== 'private').length
+  return classes.value.filter((classItem) => classItem.class_type !== "private").length
 })
 
 const availableClassesForDate = computed(() => {
@@ -309,21 +336,21 @@ const availableClassesForDate = computed(() => {
   const selectedDate = new Date(selectedBookingDate.value)
   const dayOfWeek = selectedDate.getDay() === 0 ? 7 : selectedDate.getDay() // Convert Sunday from 0 to 7
 
-  return classes.value.filter(classItem => {
+  return classes.value.filter((classItem) => {
     // Filter by day of week
     if (classItem.day_of_week !== dayOfWeek) return false
 
     // Apply the same class type filter as the main timetable
-    if (classTypeFilter.value === 'adult') {
-      return classItem.class_type === 'adult' || !classItem.class_type // Default to adult if not set
-    } else if (classTypeFilter.value === 'junior') {
-      return classItem.class_type === 'junior'
-    } else if (classTypeFilter.value === 'ladies') {
-      return classItem.class_type === 'ladies'
-    } else if (classTypeFilter.value === 'advanced') {
-      return classItem.class_type === 'advanced'
-    } else if (classTypeFilter.value === 'private') {
-      return classItem.class_type === 'private'
+    if (classTypeFilter.value === "adult") {
+      return classItem.class_type === "adult" || !classItem.class_type // Default to adult if not set
+    } else if (classTypeFilter.value === "junior") {
+      return classItem.class_type === "junior"
+    } else if (classTypeFilter.value === "ladies") {
+      return classItem.class_type === "ladies"
+    } else if (classTypeFilter.value === "advanced") {
+      return classItem.class_type === "advanced"
+    } else if (classTypeFilter.value === "private") {
+      return classItem.class_type === "private"
     }
 
     // Show all if filter is 'all'
@@ -333,22 +360,24 @@ const availableClassesForDate = computed(() => {
 
 // Check if a class is already booked for a specific date
 const isClassBookedForDate = (classId: string, date: string): boolean => {
-  return userBookings.value.some(booking =>
-    booking.class_id === classId &&
-    booking.booking_date === date &&
-    booking.status === 'confirmed'
+  return userBookings.value.some(
+    (booking) =>
+      booking.class_id === classId &&
+      booking.booking_date === date &&
+      booking.status === "confirmed",
   )
 }
 
 // Get booked dates for a specific class (for timetable indicators)
 const getBookedDatesForClass = (classId: string): string[] => {
   return userBookings.value
-    .filter(booking =>
-      booking.class_id === classId &&
-      booking.status === 'confirmed' &&
-      new Date(booking.booking_date) >= new Date() // Only future bookings
+    .filter(
+      (booking) =>
+        booking.class_id === classId &&
+        booking.status === "confirmed" &&
+        new Date(booking.booking_date) >= new Date(), // Only future bookings
     )
-    .map(booking => booking.booking_date)
+    .map((booking) => booking.booking_date)
     .sort()
 }
 
@@ -358,11 +387,12 @@ const hasUpcomingBookingsForClass = (classId: string): boolean => {
   const nextWeek = new Date()
   nextWeek.setDate(today.getDate() + 7)
 
-  return userBookings.value.some(booking =>
-    booking.class_id === classId &&
-    booking.status === 'confirmed' &&
-    new Date(booking.booking_date) >= today &&
-    new Date(booking.booking_date) <= nextWeek
+  return userBookings.value.some(
+    (booking) =>
+      booking.class_id === classId &&
+      booking.status === "confirmed" &&
+      new Date(booking.booking_date) >= today &&
+      new Date(booking.booking_date) <= nextWeek,
   )
 }
 
@@ -377,7 +407,7 @@ const getNext7DatesForDay = (dayOfWeek: number): string[] => {
 
     const currentDay = date.getDay() === 0 ? 7 : date.getDay()
     if (currentDay === dayOfWeek) {
-      dates.push(date.toISOString().split('T')[0])
+      dates.push(date.toISOString().split("T")[0])
     }
   }
 
@@ -387,9 +417,9 @@ const getNext7DatesForDay = (dayOfWeek: number): string[] => {
 // Format day date for display (e.g., "29 Jul")
 const formatDayDate = (dateString: string): string => {
   const date = new Date(dateString)
-  return date.toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short'
+  return date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
   })
 }
 
@@ -401,23 +431,24 @@ const loadClasses = async () => {
   try {
     const [classesResponse, bookingsResponse] = await Promise.all([
       classesAPI.getSchedule(),
-      authStore.isAuthenticated ? classesAPI.getUserBookings() : Promise.resolve({ success: true, data: [] })
+      authStore.isAuthenticated
+        ? classesAPI.getUserBookings()
+        : Promise.resolve({ success: true, data: [] }),
     ])
 
     if (classesResponse.success && classesResponse.data) {
       classes.value = classesResponse.data
     } else {
-      throw new Error(classesResponse.error || 'Failed to load classes')
+      throw new Error(classesResponse.error || "Failed to load classes")
     }
 
     if (bookingsResponse.success && bookingsResponse.data) {
       userBookings.value = bookingsResponse.data
     }
-
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : 'Failed to load class schedule'
+    const errorMessage = err instanceof Error ? err.message : "Failed to load class schedule"
     error.value = errorMessage
-    console.error('Error loading classes:', err)
+    console.error("Error loading classes:", err)
   } finally {
     loading.value = false
   }
@@ -425,21 +456,21 @@ const loadClasses = async () => {
 
 const getClassesForDay = (dayIndex: number): ClassSession[] => {
   return classes.value
-    .filter(classItem => {
+    .filter((classItem) => {
       // Filter by day
       if (classItem.day_of_week !== dayIndex) return false
 
       // Filter by class type
-      if (classTypeFilter.value === 'adult') {
-        return classItem.class_type === 'adult' || !classItem.class_type // Default to adult if not set
-      } else if (classTypeFilter.value === 'junior') {
-        return classItem.class_type === 'junior'
-      } else if (classTypeFilter.value === 'ladies') {
-        return classItem.class_type === 'ladies'
-      } else if (classTypeFilter.value === 'advanced') {
-        return classItem.class_type === 'advanced'
-      } else if (classTypeFilter.value === 'private') {
-        return classItem.class_type === 'private'
+      if (classTypeFilter.value === "adult") {
+        return classItem.class_type === "adult" || !classItem.class_type // Default to adult if not set
+      } else if (classTypeFilter.value === "junior") {
+        return classItem.class_type === "junior"
+      } else if (classTypeFilter.value === "ladies") {
+        return classItem.class_type === "ladies"
+      } else if (classTypeFilter.value === "advanced") {
+        return classItem.class_type === "advanced"
+      } else if (classTypeFilter.value === "private") {
+        return classItem.class_type === "private"
       }
 
       // Show all if filter is 'all'
@@ -451,15 +482,15 @@ const getClassesForDay = (dayIndex: number): ClassSession[] => {
 const formatTime = (timeString: string): string => {
   try {
     // Handle time format (e.g., "18:00:00" or "18:00")
-    const [hours, minutes] = timeString.split(':')
+    const [hours, minutes] = timeString.split(":")
     const hour = parseInt(hours, 10)
     const minute = parseInt(minutes, 10)
 
     // Convert to 12-hour format
-    const period = hour >= 12 ? 'PM' : 'AM'
+    const period = hour >= 12 ? "PM" : "AM"
     const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
 
-    return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`
+    return `${displayHour}:${minute.toString().padStart(2, "0")} ${period}`
   } catch (error) {
     return timeString // Fallback to original string if parsing fails
   }
@@ -476,13 +507,13 @@ const openBookingModal = (classItem: ClassSession) => {
   const daysUntilClass = (targetDay - (today.getDay() || 7) + 7) % 7
   const nextClassDate = new Date(today)
   nextClassDate.setDate(today.getDate() + (daysUntilClass === 0 ? 7 : daysUntilClass))
-  selectedBookingDate.value = nextClassDate.toISOString().split('T')[0]
+  selectedBookingDate.value = nextClassDate.toISOString().split("T")[0]
 }
 
 const closeBookingModal = () => {
   showBookingModal.value = false
   selectedClassForBooking.value = null
-  selectedBookingDate.value = ''
+  selectedBookingDate.value = ""
   bookingError.value = null
 }
 
@@ -490,11 +521,14 @@ const onDateChange = () => {
   // When date changes, check if current selected class is still available and not booked
   if (selectedClassForBooking.value && availableClassesForDate.value.length > 0) {
     const classStillAvailable = availableClassesForDate.value.find(
-      c => c.id === selectedClassForBooking.value?.id
+      (c) => c.id === selectedClassForBooking.value?.id,
     )
 
     // If current class isn't available on this day OR is already booked, clear selection
-    if (!classStillAvailable || isClassBookedForDate(selectedClassForBooking.value.id, selectedBookingDate.value)) {
+    if (
+      !classStillAvailable ||
+      isClassBookedForDate(selectedClassForBooking.value.id, selectedBookingDate.value)
+    ) {
       selectedClassForBooking.value = null
     }
   }
@@ -503,7 +537,7 @@ const onDateChange = () => {
   if (!selectedClassForBooking.value) {
     // Only auto-select if there's exactly one available, unbookable class
     const availableUnbookedClasses = availableClassesForDate.value.filter(
-      c => !isClassBookedForDate(c.id, selectedBookingDate.value)
+      (c) => !isClassBookedForDate(c.id, selectedBookingDate.value),
     )
 
     if (availableUnbookedClasses.length === 1) {
@@ -518,19 +552,19 @@ const selectClass = (classItem: ClassSession) => {
 
 const formatSelectedDate = (dateString: string): string => {
   const date = new Date(dateString)
-  return date.toLocaleDateString('en-GB', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long'
+  return date.toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
   })
 }
 
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString)
-  return date.toLocaleDateString('en-GB', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short'
+  return date.toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
   })
 }
 
@@ -539,7 +573,7 @@ const confirmBooking = async () => {
 
   const confirmed = await confirm(
     `Book "${selectedClassForBooking.value.name}" on ${formatSelectedDate(selectedBookingDate.value)} at ${formatTime(selectedClassForBooking.value.start_time)}?`,
-    'Confirm Booking'
+    "Confirm Booking",
   )
 
   if (!confirmed) return
@@ -550,19 +584,19 @@ const confirmBooking = async () => {
   try {
     const response = await classesAPI.bookClass(
       selectedClassForBooking.value.id,
-      selectedBookingDate.value
+      selectedBookingDate.value,
     )
 
     if (response.success) {
       // Add booking to local state immediately for better UX
       const newBooking = {
         id: `temp-${Date.now()}`, // Temporary ID
-        user_id: authStore.user?.id || '',
+        user_id: authStore.user?.id || "",
         class_id: selectedClassForBooking.value.id,
         booking_date: selectedBookingDate.value,
-        status: 'confirmed' as const,
+        status: "confirmed" as const,
         created_at: new Date().toISOString(),
-        class: selectedClassForBooking.value
+        class: selectedClassForBooking.value,
       }
       userBookings.value.push(newBooking)
 
@@ -575,31 +609,32 @@ const confirmBooking = async () => {
       }
 
       closeBookingModal()
-      await alert('Class booked successfully!', 'Success')
+      await alert("Class booked successfully!", "Success")
     } else {
-      throw new Error(response.error || 'Failed to book class')
+      throw new Error(response.error || "Failed to book class")
     }
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : 'Failed to book class'
+    const errorMessage = err instanceof Error ? err.message : "Failed to book class"
     bookingError.value = errorMessage
-    console.error('Booking error:', err)
+    console.error("Booking error:", err)
   } finally {
     bookingLoading.value = false
   }
 }
 
 const cancelClassBookings = async (classId: string) => {
-  const bookingsToCancel = userBookings.value.filter(booking =>
-    booking.class_id === classId &&
-    booking.status === 'confirmed' &&
-    new Date(booking.booking_date) >= new Date()
+  const bookingsToCancel = userBookings.value.filter(
+    (booking) =>
+      booking.class_id === classId &&
+      booking.status === "confirmed" &&
+      new Date(booking.booking_date) >= new Date(),
   )
 
   if (bookingsToCancel.length === 0) return
 
   const confirmed = await confirm(
-    `Cancel ${bookingsToCancel.length} upcoming booking${bookingsToCancel.length > 1 ? 's' : ''} for this class?`,
-    'Cancel Bookings'
+    `Cancel ${bookingsToCancel.length} upcoming booking${bookingsToCancel.length > 1 ? "s" : ""} for this class?`,
+    "Cancel Bookings",
   )
 
   if (!confirmed) return
@@ -610,8 +645,8 @@ const cancelClassBookings = async (classId: string) => {
     }
 
     // Remove cancelled bookings from local state immediately
-    userBookings.value = userBookings.value.filter(booking =>
-      !bookingsToCancel.some(cancelled => cancelled.id === booking.id)
+    userBookings.value = userBookings.value.filter(
+      (booking) => !bookingsToCancel.some((cancelled) => cancelled.id === booking.id),
     )
 
     // Also refresh from server to ensure consistency
@@ -620,10 +655,10 @@ const cancelClassBookings = async (classId: string) => {
       userBookings.value = bookingsResponse.data
     }
 
-    await alert('Bookings cancelled successfully!', 'Success')
+    await alert("Bookings cancelled successfully!", "Success")
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : 'Failed to cancel bookings'
-    await alert(errorMessage, 'Error')
+    const errorMessage = err instanceof Error ? err.message : "Failed to cancel bookings"
+    await alert(errorMessage, "Error")
   }
 }
 
@@ -678,8 +713,12 @@ h1 {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error-state {
@@ -1166,7 +1205,7 @@ h1 {
 }
 
 .radio-button.selected::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;

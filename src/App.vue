@@ -14,10 +14,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted } from "vue"
 import AppHeader from "@/components/AppHeader.vue"
 import AppFooter from "@/components/AppFooter.vue"
-import { useDarkMode } from '@/composables/useDarkMode'
+import { useDarkMode } from "@/composables/useDarkMode"
 import Modal from "@/components/Modal.vue"
 
 const { initializeTheme } = useDarkMode()
@@ -35,7 +35,9 @@ onMounted(() => {
   flex-direction: column;
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .main-content {

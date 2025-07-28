@@ -15,7 +15,12 @@
 
       <div v-if="error" class="error-message">
         <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
         </svg>
         <span>{{ error }}</span>
       </div>
@@ -23,10 +28,17 @@
       <!-- Membership Plans -->
       <section class="plans-section" v-if="!authStore.isLoading && !error">
         <div class="membership-plans-grid">
-          <div class="plan-card" v-for="plan in membershipPlans" :key="plan.id" :class="{ 'selected': selectedPlan?.id === plan.id }">
+          <div
+            class="plan-card"
+            v-for="plan in membershipPlans"
+            :key="plan.id"
+            :class="{ selected: selectedPlan?.id === plan.id }"
+          >
             <div class="plan-header">
               <h3>{{ plan.name }}</h3>
-              <div class="price">£{{ (plan.price_monthly / 100).toFixed(2) }}<span class="price-period">/month</span></div>
+              <div class="price">
+                £{{ (plan.price_monthly / 100).toFixed(2) }}<span class="price-period">/month</span>
+              </div>
             </div>
 
             <div class="plan-description" v-if="plan.description">
@@ -36,7 +48,12 @@
             <ul class="plan-features" v-if="plan.features && plan.features.length">
               <li v-for="feature in plan.features" :key="feature">
                 <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 {{ feature }}
               </li>
@@ -63,18 +80,29 @@
           <div class="selected-plan-summary">
             <div class="summary-content">
               <h3>{{ selectedPlan.name }}</h3>
-              <p class="summary-price">£{{ (selectedPlan.price_monthly / 100).toFixed(2) }}/month</p>
-              <p class="summary-description" v-if="selectedPlan.description">{{ selectedPlan.description }}</p>
+              <p class="summary-price">
+                £{{ (selectedPlan.price_monthly / 100).toFixed(2) }}/month
+              </p>
+              <p class="summary-description" v-if="selectedPlan.description">
+                {{ selectedPlan.description }}
+              </p>
             </div>
           </div>
 
           <div class="payment-form">
             <div class="payment-placeholder">
               <svg class="payment-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                />
               </svg>
               <p>Payment integration with Stripe will be implemented here.</p>
-              <p class="payment-note">Selected plan: <strong>{{ selectedPlan.name }}</strong></p>
+              <p class="payment-note">
+                Selected plan: <strong>{{ selectedPlan.name }}</strong>
+              </p>
             </div>
 
             <div class="payment-actions">
@@ -89,7 +117,12 @@
       <div v-if="!authStore.isAuthenticated" class="auth-required">
         <div class="auth-content">
           <svg class="auth-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            />
           </svg>
           <h3>Login Required</h3>
           <p>Please log in to manage your subscription and access member benefits.</p>
@@ -119,13 +152,13 @@ const error = ref<string | null>(null)
 const loadMembershipPlans = async () => {
   try {
     const { data, error: plansError } = await supabase
-      .from('subscription_plans')
-      .select('*')
-      .eq('is_active', true)
-      .order('sort_order')
+      .from("subscription_plans")
+      .select("*")
+      .eq("is_active", true)
+      .order("sort_order")
 
     if (plansError) {
-      console.error('Failed to load plans:', plansError)
+      console.error("Failed to load plans:", plansError)
       error.value = plansError.message
       return
     }
@@ -134,7 +167,7 @@ const loadMembershipPlans = async () => {
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : "Failed to load membership plans"
     error.value = errorMessage
-    console.error('Load plans error:', err)
+    console.error("Load plans error:", err)
   }
 }
 
@@ -213,8 +246,12 @@ onMounted(async () => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error-message {
@@ -272,7 +309,7 @@ onMounted(async () => {
 }
 
 .plan-card.selected::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -498,8 +535,8 @@ onMounted(async () => {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #B8860B;
-  border-color: #B8860B;
+  background: #b8860b;
+  border-color: #b8860b;
 }
 
 .btn-ghost {

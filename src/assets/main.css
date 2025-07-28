@@ -6,21 +6,21 @@
 /* CSS Custom Properties for Theme Control */
 :root {
   /* Core Theme Colors - Toned Down */
-  --bg-primary: #1C1C1C;
-  --bg-secondary: #2A2A2A;
-  --bg-tertiary: #3A3A3A;
+  --bg-primary: #1c1c1c;
+  --bg-secondary: #2a2a2a;
+  --bg-tertiary: #3a3a3a;
 
-  --accent-red: #B22222;      /* Firebrick red - more subtle */
-  --accent-gold: #DAA520;     /* Goldenrod - sophisticated */
+  --accent-red: #b22222; /* Firebrick red - more subtle */
+  --accent-gold: #daa520; /* Goldenrod - sophisticated */
 
-  --text-primary: #FFFFFF;
-  --text-secondary: #CCCCCC;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
   --text-muted: #999999;
 
   /* Interactive States */
-  --hover-bg: #3A3A3A;
-  --active-bg: #4A4A4A;
-  --border-color: #4A4A4A;
+  --hover-bg: #3a3a3a;
+  --active-bg: #4a4a4a;
+  --border-color: #4a4a4a;
 
   /* Gradients - More Subtle */
   --gradient-primary: linear-gradient(135deg, var(--accent-red), var(--accent-gold));
@@ -34,17 +34,17 @@
 
 /* Light mode overrides */
 .light-mode {
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #F8F8F8;
-  --bg-tertiary: #F0F0F0;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f8f8;
+  --bg-tertiary: #f0f0f0;
 
-  --text-primary: #1C1C1C;
-  --text-secondary: #4A4A4A;
+  --text-primary: #1c1c1c;
+  --text-secondary: #4a4a4a;
   --text-muted: #666666;
 
-  --hover-bg: #F0F0F0;
-  --active-bg: #E8E8E8;
-  --border-color: #E0E0E0;
+  --hover-bg: #f0f0f0;
+  --active-bg: #e8e8e8;
+  --border-color: #e0e0e0;
 
   --shadow-subtle: 0 2px 8px rgba(28, 28, 28, 0.1);
   --shadow-medium: 0 4px 16px rgba(28, 28, 28, 0.15);
@@ -57,11 +57,17 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 /* Typography */
-h1, h2, h3, h4, .toolbar-title {
+h1,
+h2,
+h3,
+h4,
+.toolbar-title {
   font-family: "Teko", sans-serif;
   text-transform: uppercase;
   letter-spacing: 1.5px;
@@ -79,7 +85,7 @@ h1, h2, h3, h4, .toolbar-title {
 }
 
 .nav-link::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -2px;
   left: 0;
@@ -125,8 +131,13 @@ h1, h2, h3, h4, .toolbar-title {
 }
 
 @keyframes gradient-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 /* Button hover effects - More Subtle */
@@ -164,8 +175,8 @@ h1, h2, h3, h4, .toolbar-title {
 }
 
 .btn-primary:hover {
-  background: #B8860B; /* Darker gold */
-  border-color: #B8860B;
+  background: #b8860b; /* Darker gold */
+  border-color: #b8860b;
 }
 
 .btn-secondary {
@@ -175,6 +186,6 @@ h1, h2, h3, h4, .toolbar-title {
 }
 
 .btn-secondary:hover {
-  background: #8B1A1A; /* Darker red */
-  border-color: #8B1A1A;
+  background: #8b1a1a; /* Darker red */
+  border-color: #8b1a1a;
 }

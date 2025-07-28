@@ -1,6 +1,6 @@
 // src/services/galleryUpload.ts
-import { supabase } from '@/lib/supabase'
-import type { GalleryImage } from '@/types'
+import { supabase } from "@/lib/supabase"
+import type { GalleryImage } from "@/types"
 
 export interface UploadedFile {
   file: File
@@ -15,9 +15,9 @@ export interface UploadResult {
 }
 
 class GalleryUploadService {
-  private readonly BUCKET_NAME = 'gallery-images'
+  private readonly BUCKET_NAME = "gallery-images"
   private readonly MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
-  private readonly ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+  private readonly ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]
 
   /**
    * Validate file before upload
@@ -26,14 +26,14 @@ class GalleryUploadService {
     if (!this.ALLOWED_TYPES.includes(file.type)) {
       return {
         valid: false,
-        error: 'File type not supported. Please use JPEG, PNG, WebP, or GIF.'
+        error: "File type not supported. Please use JPEG, PNG, WebP, or GIF.",
       }
     }
 
     if (file.size > this.MAX_FILE_SIZE) {
       return {
         valid: false,
-        error: 'File too large. Maximum size is 5MB.'
+        error: "File too large. Maximum size is 5MB.",
       }
     }
 
@@ -45,9 +45,9 @@ class GalleryUploadService {
    */
   private generateFileName(originalName: string): string {
     const timestamp = Date.now()
-    const extension = originalName.split('.').pop()
-    const nameWithoutExt = originalName.replace(/\.[^/.]+$/, '')
-    const sanitizedName = nameWithoutExt.replace(/[^a-zA-Z0-9-_]/g, '-')
+    const extension = originalName.split(".").pop()
+    const nameWithoutExt = originalName.replace(/\.[^/.]+$/, "")
+    const sanitizedName = nameWithoutExt.replace(/[^a-zA-Z0-9-_]/g, "-")
     return `${timestamp}-${sanitizedName}.${extension}`
   }
 
@@ -61,7 +61,7 @@ class GalleryUploadService {
       description?: string
       category?: string
       is_featured?: boolean
-    }
+    },
   ): Promise<UploadResult> {
     try {
       // Validate file
@@ -78,35 +78,33 @@ class GalleryUploadService {
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from(this.BUCKET_NAME)
         .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
+          cacheControl: "3600",
+          upsert: false,
         })
 
       if (uploadError) throw uploadError
 
       // Get public URL
-      const { data: urlData } = supabase.storage
-        .from(this.BUCKET_NAME)
-        .getPublicUrl(filePath)
+      const { data: urlData } = supabase.storage.from(this.BUCKET_NAME).getPublicUrl(filePath)
 
       if (!urlData.publicUrl) {
-        throw new Error('Failed to get public URL')
+        throw new Error("Failed to get public URL")
       }
 
       // Create database record
       const { data: imageData, error: dbError } = await supabase
-        .from('gallery_images')
+        .from("gallery_images")
         .insert({
           title: metadata.title || file.name,
           description: metadata.description || null,
-          category: metadata.category || 'general',
+          category: metadata.category || "general",
           image_url: urlData.publicUrl,
           thumbnail_url: urlData.publicUrl, // Use same URL for now
           storage_path: filePath,
           file_size: file.size,
           mime_type: file.type,
           is_featured: metadata.is_featured || false,
-          sort_order: 0
+          sort_order: 0,
         })
         .select()
         .single()
@@ -116,14 +114,13 @@ class GalleryUploadService {
       return {
         success: true,
         imageId: imageData.id,
-        url: urlData.publicUrl
+        url: urlData.publicUrl,
       }
-
     } catch (error) {
-      console.error('Upload error:', error)
+      console.error("Upload error:", error)
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Upload failed'
+        error: error instanceof Error ? error.message : "Upload failed",
       }
     }
   }
@@ -136,7 +133,7 @@ class GalleryUploadService {
     defaultMetadata: {
       category?: string
       is_featured?: boolean
-    } = {}
+    } = {},
   ): Promise<UploadResult[]> {
     const results: UploadResult[] = []
 
@@ -144,7 +141,7 @@ class GalleryUploadService {
       const result = await this.uploadImage(uploadedFile.file, {
         title: uploadedFile.file.name,
         category: defaultMetadata.category,
-        is_featured: defaultMetadata.is_featured
+        is_featured: defaultMetadata.is_featured,
       })
       results.push(result)
     }
@@ -159,9 +156,9 @@ class GalleryUploadService {
     try {
       // Get image data first
       const { data: image, error: fetchError } = await supabase
-        .from('gallery_images')
-        .select('storage_path')
-        .eq('id', imageId)
+        .from("gallery_images")
+        .select("storage_path")
+        .eq("id", imageId)
         .single()
 
       if (fetchError) throw fetchError
@@ -173,25 +170,21 @@ class GalleryUploadService {
           .remove([image.storage_path])
 
         if (storageError) {
-          console.warn('Storage deletion failed:', storageError)
+          console.warn("Storage deletion failed:", storageError)
           // Continue with database deletion even if storage fails
         }
       }
 
       // Delete from database
-      const { error: dbError } = await supabase
-        .from('gallery_images')
-        .delete()
-        .eq('id', imageId)
+      const { error: dbError } = await supabase.from("gallery_images").delete().eq("id", imageId)
 
       if (dbError) throw dbError
 
       return { success: true }
-
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Deletion failed'
+        error: error instanceof Error ? error.message : "Deletion failed",
       }
     }
   }

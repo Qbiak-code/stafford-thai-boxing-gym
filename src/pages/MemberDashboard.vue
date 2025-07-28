@@ -4,9 +4,7 @@
       <!-- Page Header -->
       <div class="page-header">
         <h1>Member Dashboard</h1>
-        <p v-if="authStore.user">
-          Welcome back, {{ authStore.userFullName }}!
-        </p>
+        <p v-if="authStore.user">Welcome back, {{ authStore.userFullName }}!</p>
       </div>
 
       <!-- Loading State -->
@@ -18,21 +16,23 @@
       <!-- Error State -->
       <div v-if="error" class="error-state">
         <p><strong>Error:</strong> {{ error }}</p>
-        <button @click="loadDashboardData" class="btn btn-ghost btn-sm">
-          Try again
-        </button>
+        <button @click="loadDashboardData" class="btn btn-ghost btn-sm">Try again</button>
       </div>
 
       <!-- Dashboard Content -->
       <div v-if="!isLoading && authStore.user" class="dashboard-content">
-
         <!-- Quick Stats -->
         <div class="stats-grid">
           <!-- Membership Status -->
           <div class="stat-card membership-card">
             <div class="stat-icon">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div class="stat-content">
@@ -41,7 +41,7 @@
                 {{ currentSubscription?.plan?.name || authStore.user.membershipType }}
               </p>
               <p class="stat-label">
-                {{ currentSubscription?.status === 'active' ? 'Active' : 'Inactive' }}
+                {{ currentSubscription?.status === "active" ? "Active" : "Inactive" }}
               </p>
             </div>
           </div>
@@ -50,7 +50,12 @@
           <div class="stat-card classes-card">
             <div class="stat-icon">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
             </div>
             <div class="stat-content">
@@ -58,9 +63,7 @@
               <p class="stat-value">
                 {{ upcomingBookings.length }}
               </p>
-              <p class="stat-label">
-                This week
-              </p>
+              <p class="stat-label">This week</p>
             </div>
           </div>
 
@@ -68,7 +71,12 @@
           <div class="stat-card duration-card">
             <div class="stat-icon">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
               </svg>
             </div>
             <div class="stat-content">
@@ -85,10 +93,8 @@
 
         <!-- Main Content Grid -->
         <div class="main-grid">
-
           <!-- Left Column - Profile & Subscription -->
           <div class="left-column">
-
             <!-- Profile Management -->
             <div class="dashboard-card">
               <div class="card-header">
@@ -99,28 +105,16 @@
                   <div class="form-row">
                     <div class="form-group">
                       <label>First Name</label>
-                      <input
-                        v-model="profile.first_name"
-                        type="text"
-                        class="form-input"
-                      />
+                      <input v-model="profile.first_name" type="text" class="form-input" />
                     </div>
                     <div class="form-group">
                       <label>Last Name</label>
-                      <input
-                        v-model="profile.last_name"
-                        type="text"
-                        class="form-input"
-                      />
+                      <input v-model="profile.last_name" type="text" class="form-input" />
                     </div>
                   </div>
                   <div class="form-group">
                     <label>Phone Number</label>
-                    <input
-                      v-model="profile.phone"
-                      type="tel"
-                      class="form-input"
-                    />
+                    <input v-model="profile.phone" type="tel" class="form-input" />
                   </div>
                   <div class="form-group">
                     <label>Emergency Contact</label>
@@ -131,12 +125,8 @@
                       class="form-input"
                     />
                   </div>
-                  <button
-                    type="submit"
-                    :disabled="savingProfile"
-                    class="btn btn-primary"
-                  >
-                    {{ savingProfile ? 'Saving...' : 'Save Profile' }}
+                  <button type="submit" :disabled="savingProfile" class="btn btn-primary">
+                    {{ savingProfile ? "Saving..." : "Save Profile" }}
                   </button>
                 </form>
               </div>
@@ -158,24 +148,19 @@
                   <div class="subscription-meta">
                     <p><strong>Status:</strong> {{ currentSubscription.status }}</p>
                     <p v-if="currentSubscription.next_billing_date">
-                      <strong>Next billing:</strong> {{ formatDate(currentSubscription.next_billing_date) }}
+                      <strong>Next billing:</strong>
+                      {{ formatDate(currentSubscription.next_billing_date) }}
                     </p>
                   </div>
                   <div class="subscription-actions">
-                    <router-link
-                      to="/subscriptions"
-                      class="btn btn-ghost"
-                    >
+                    <router-link to="/subscriptions" class="btn btn-ghost">
                       Manage Subscription
                     </router-link>
                   </div>
                 </div>
                 <div v-else class="no-subscription">
                   <p>No active subscription</p>
-                  <router-link
-                    to="/subscriptions"
-                    class="btn btn-primary"
-                  >
+                  <router-link to="/subscriptions" class="btn btn-primary">
                     Choose Plan
                   </router-link>
                 </div>
@@ -185,17 +170,11 @@
 
           <!-- Right Column - Classes & Actions -->
           <div class="right-column">
-
             <!-- Upcoming Classes -->
             <div class="dashboard-card">
               <div class="card-header">
                 <h3>Upcoming Classes</h3>
-                <router-link
-                  to="/timetable"
-                  class="header-link"
-                >
-                  View Timetable
-                </router-link>
+                <router-link to="/timetable" class="header-link"> View Timetable </router-link>
               </div>
               <div class="card-content">
                 <div v-if="upcomingBookings.length > 0" class="bookings-list">
@@ -207,7 +186,8 @@
                     <div class="booking-info">
                       <h4>{{ booking.class?.name }}</h4>
                       <p class="booking-time">
-                        {{ formatDate(booking.booking_date) }} at {{ formatTime(booking.class?.start_time) }}
+                        {{ formatDate(booking.booking_date) }} at
+                        {{ formatTime(booking.class?.start_time) }}
                       </p>
                       <p class="booking-instructor" v-if="booking.class?.instructor">
                         with {{ booking.class.instructor }}
@@ -215,10 +195,7 @@
                     </div>
                     <div class="booking-actions">
                       <span class="status-badge">{{ booking.status }}</span>
-                      <button
-                        @click="cancelBooking(booking.id)"
-                        class="btn btn-ghost btn-sm"
-                      >
+                      <button @click="cancelBooking(booking.id)" class="btn btn-ghost btn-sm">
                         Cancel
                       </button>
                     </div>
@@ -227,15 +204,17 @@
                 <div v-else class="empty-state">
                   <div class="empty-icon">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
                     </svg>
                   </div>
                   <h4>No upcoming classes</h4>
                   <p>Book your first class to get started!</p>
-                  <router-link
-                    to="/timetable"
-                    class="btn btn-primary"
-                  >
+                  <router-link to="/timetable" class="btn btn-primary">
                     Browse Classes
                   </router-link>
                 </div>
@@ -249,13 +228,15 @@
               </div>
               <div class="card-content">
                 <div class="actions-grid">
-                  <router-link
-                    to="/timetable"
-                    class="action-item"
-                  >
+                  <router-link to="/timetable" class="action-item">
                     <div class="action-icon action-icon-primary">
                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
                       </svg>
                     </div>
                     <div class="action-content">
@@ -264,13 +245,15 @@
                     </div>
                   </router-link>
 
-                  <router-link
-                    to="/subscriptions"
-                    class="action-item"
-                  >
+                  <router-link to="/subscriptions" class="action-item">
                     <div class="action-icon action-icon-secondary">
                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                        />
                       </svg>
                     </div>
                     <div class="action-content">
@@ -279,13 +262,15 @@
                     </div>
                   </router-link>
 
-                  <router-link
-                    to="/contact"
-                    class="action-item"
-                  >
+                  <router-link to="/contact" class="action-item">
                     <div class="action-icon action-icon-tertiary">
                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                        />
                       </svg>
                     </div>
                     <div class="action-content">
@@ -294,13 +279,15 @@
                     </div>
                   </router-link>
 
-                  <button
-                    @click="signOut"
-                    class="action-item logout-action"
-                  >
+                  <button @click="signOut" class="action-item logout-action">
                     <div class="action-icon action-icon-logout">
                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                        />
                       </svg>
                     </div>
                     <div class="action-content">
@@ -324,12 +311,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { useModal } from '@/composables/useModal'
-import { subscriptionsAPI, classesAPI, profileAPI } from '@/services/api'
-import type { UserSubscription, ClassBooking, UserProfile } from '@/types'
+import { ref, reactive, onMounted, computed } from "vue"
+import { useRouter } from "vue-router"
+import { useAuthStore } from "@/stores/auth"
+import { useModal } from "@/composables/useModal"
+import { subscriptionsAPI, classesAPI, profileAPI } from "@/services/api"
+import type { UserSubscription, ClassBooking, UserProfile } from "@/types"
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -345,25 +332,25 @@ const successMessage = ref<string | null>(null)
 const currentSubscription = ref<UserSubscription | null>(null)
 const upcomingBookings = ref<ClassBooking[]>([])
 const profile = reactive({
-  first_name: '',
-  last_name: '',
-  phone: '',
-  emergency_contact: ''
+  first_name: "",
+  last_name: "",
+  phone: "",
+  emergency_contact: "",
 })
 
 // Computed
 const membershipDuration = computed(() => {
-  if (!authStore.user?.joinDate) return ''
+  if (!authStore.user?.joinDate) return ""
   const joinDate = new Date(authStore.user.joinDate)
   const now = new Date()
   const months = Math.floor((now.getTime() - joinDate.getTime()) / (1000 * 60 * 60 * 24 * 30))
 
-  if (months < 1) return 'New member'
-  if (months < 12) return `${months} month${months > 1 ? 's' : ''}`
+  if (months < 1) return "New member"
+  if (months < 12) return `${months} month${months > 1 ? "s" : ""}`
 
   const years = Math.floor(months / 12)
   const remainingMonths = months % 12
-  return `${years} year${years > 1 ? 's' : ''}${remainingMonths > 0 ? ` ${remainingMonths}mo` : ''}`
+  return `${years} year${years > 1 ? "s" : ""}${remainingMonths > 0 ? ` ${remainingMonths}mo` : ""}`
 })
 
 // Methods
@@ -378,7 +365,7 @@ const loadDashboardData = async () => {
     const [subscriptionResponse, bookingsResponse, profileResponse] = await Promise.all([
       subscriptionsAPI.getUserSubscription(),
       classesAPI.getUserBookings(),
-      profileAPI.getProfile()
+      profileAPI.getProfile(),
     ])
 
     // Handle subscription
@@ -394,17 +381,16 @@ const loadDashboardData = async () => {
     // Handle profile
     if (profileResponse.success && profileResponse.data) {
       Object.assign(profile, {
-        first_name: profileResponse.data.first_name || '',
-        last_name: profileResponse.data.last_name || '',
-        phone: profileResponse.data.phone || '',
-        emergency_contact: profileResponse.data.emergency_contact || ''
+        first_name: profileResponse.data.first_name || "",
+        last_name: profileResponse.data.last_name || "",
+        phone: profileResponse.data.phone || "",
+        emergency_contact: profileResponse.data.emergency_contact || "",
       })
     }
-
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : 'Failed to load dashboard data'
+    const errorMessage = err instanceof Error ? err.message : "Failed to load dashboard data"
     error.value = errorMessage
-    console.error('Dashboard loading error:', err)
+    console.error("Dashboard loading error:", err)
   } finally {
     isLoading.value = false
   }
@@ -418,7 +404,7 @@ const saveProfile = async () => {
     const response = await profileAPI.updateProfile(profile)
 
     if (response.success) {
-      successMessage.value = 'Profile updated successfully!'
+      successMessage.value = "Profile updated successfully!"
       setTimeout(() => {
         successMessage.value = null
       }, 3000)
@@ -426,10 +412,10 @@ const saveProfile = async () => {
       // Update auth store
       await authStore.checkAuthStatus()
     } else {
-      throw new Error(response.error || 'Failed to save profile')
+      throw new Error(response.error || "Failed to save profile")
     }
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : 'Failed to save profile'
+    const errorMessage = err instanceof Error ? err.message : "Failed to save profile"
     error.value = errorMessage
   } finally {
     savingProfile.value = false
@@ -437,7 +423,7 @@ const saveProfile = async () => {
 }
 
 const cancelBooking = async (bookingId: string) => {
-  const confirmed = await confirmCancel('Are you sure you want to cancel this booking?')
+  const confirmed = await confirmCancel("Are you sure you want to cancel this booking?")
   if (!confirmed) return
 
   try {
@@ -445,40 +431,40 @@ const cancelBooking = async (bookingId: string) => {
 
     if (response.success) {
       // Remove from local state
-      upcomingBookings.value = upcomingBookings.value.filter(b => b.id !== bookingId)
-      successMessage.value = 'Booking cancelled successfully!'
+      upcomingBookings.value = upcomingBookings.value.filter((b) => b.id !== bookingId)
+      successMessage.value = "Booking cancelled successfully!"
       setTimeout(() => {
         successMessage.value = null
       }, 3000)
     } else {
-      throw new Error(response.error || 'Failed to cancel booking')
+      throw new Error(response.error || "Failed to cancel booking")
     }
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : 'Failed to cancel booking'
-    await alert(errorMessage, 'Error')
+    const errorMessage = err instanceof Error ? err.message : "Failed to cancel booking"
+    await alert(errorMessage, "Error")
   }
 }
 
 const signOut = async () => {
   await authStore.logout()
-  router.push('/member')
+  router.push("/member")
 }
 
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString)
-  return date.toLocaleDateString('en-GB', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric'
+  return date.toLocaleDateString("en-GB", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
   })
 }
 
 const formatTime = (timeString: string | undefined): string => {
-  if (!timeString) return ''
+  if (!timeString) return ""
   try {
-    const [hours, minutes] = timeString.split(':')
+    const [hours, minutes] = timeString.split(":")
     const hour = parseInt(hours, 10)
-    const period = hour >= 12 ? 'PM' : 'AM'
+    const period = hour >= 12 ? "PM" : "AM"
     const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
     return `${displayHour}:${minutes} ${period}`
   } catch {
@@ -488,9 +474,9 @@ const formatTime = (timeString: string | undefined): string => {
 
 const formatMemberSince = (dateString: string): string => {
   const date = new Date(dateString)
-  return date.toLocaleDateString('en-GB', {
-    month: 'short',
-    year: 'numeric'
+  return date.toLocaleDateString("en-GB", {
+    month: "short",
+    year: "numeric",
   })
 }
 
@@ -500,7 +486,7 @@ onMounted(async () => {
   if (authStore.isAuthenticated) {
     await loadDashboardData()
   } else {
-    router.push('/member')
+    router.push("/member")
   }
 })
 </script>
@@ -553,8 +539,12 @@ onMounted(async () => {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error-state {
