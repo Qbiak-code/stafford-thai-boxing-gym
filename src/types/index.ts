@@ -35,6 +35,32 @@ export interface UserProfile {
   updated_at: string
 }
 
+// Subscription & Membership
+export interface SubscriptionPlan {
+  id: string
+  name: string
+  description: string | null
+  price_monthly: number
+  features: string[] | null
+  is_active: boolean
+  sort_order: number | null
+  created_at: string
+  updated_at: string
+}
+
+export interface UserSubscription {
+  id: string
+  user_id: string
+  plan_id: string
+  status: 'active' | 'inactive' | 'cancelled' | 'pending'
+  start_date: string
+  end_date: string | null
+  stripe_subscription_id: string | null
+  created_at: string
+  updated_at: string
+  plan?: SubscriptionPlan
+}
+
 // Classes & Booking
 export interface ClassSession {
   id: string
@@ -58,32 +84,6 @@ export interface ClassBooking {
   status: 'confirmed' | 'cancelled'
   created_at: string
   class?: ClassSession // Populated via join
-}
-
-// Subscriptions & Payments
-export interface SubscriptionPlan {
-  id: string
-  name: string
-  description: string | null
-  price_monthly: number // in pence (UK)
-  price_yearly: number | null // in pence (UK)
-  stripe_price_id: string | null
-  features: Record<string, unknown> | null
-  is_active: boolean | null
-  vat_rate?: number // UK VAT rate (20%)
-}
-
-export interface UserSubscription {
-  id: string
-  user_id: string
-  plan_id: string
-  stripe_subscription_id: string | null
-  status: 'active' | 'inactive' | 'cancelled' | 'past_due'
-  start_date: string | null
-  end_date: string | null
-  created_at: string
-  updated_at: string
-  plan?: SubscriptionPlan // Populated via join
 }
 
 // Contact & Communications
