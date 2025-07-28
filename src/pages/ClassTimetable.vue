@@ -190,9 +190,11 @@
 import { ref, computed, onMounted } from 'vue'
 import { classesAPI } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
+import { useModal } from '@/composables/useModal'
 import type { ClassSession } from '@/types'
 
 const authStore = useAuthStore()
+const { confirm, alert } = useModal()
 
 // State
 const classes = ref<ClassSession[]>([])
@@ -335,6 +337,15 @@ const formatSelectedDate = (dateString: string): string => {
 const confirmBooking = async () => {
   if (!selectedClassForBooking.value || !selectedBookingDate.value) return
 
+  // Replace: alert('Class booked successfully!')
+  // With custom modal
+  const confirmed = await confirm(
+    `Book "${selectedClassForBooking.value.name}" on ${formatSelectedDate(selectedBookingDate.value)} at ${formatTime(selectedClassForBooking.value.start_time)}?`,
+    'Confirm Booking'
+  )
+
+  if (!confirmed) return
+
   bookingLoading.value = true
   bookingError.value = null
 
@@ -346,7 +357,7 @@ const confirmBooking = async () => {
 
     if (response.success) {
       closeBookingModal()
-      alert('Class booked successfully!')
+      await alert('Class booked successfully!', 'Success')
     } else {
       throw new Error(response.error || 'Failed to book class')
     }

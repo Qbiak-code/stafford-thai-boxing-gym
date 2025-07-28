@@ -9,6 +9,7 @@
       </router-view>
     </main>
     <AppFooter />
+    <Modal />
   </div>
 </template>
 
@@ -17,6 +18,7 @@ import { onMounted } from 'vue'
 import AppHeader from "@/components/AppHeader.vue"
 import AppFooter from "@/components/AppFooter.vue"
 import { useDarkMode } from '@/composables/useDarkMode'
+import Modal from "@/components/Modal.vue"
 
 const { initializeTheme } = useDarkMode()
 

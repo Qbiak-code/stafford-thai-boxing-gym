@@ -327,11 +327,13 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useModal } from '@/composables/useModal'
 import { subscriptionsAPI, classesAPI, profileAPI } from '@/services/api'
 import type { UserSubscription, ClassBooking, UserProfile } from '@/types'
 
 const authStore = useAuthStore()
 const router = useRouter()
+const { confirmCancel, alert } = useModal()
 
 // State
 const isLoading = ref(false)
@@ -435,7 +437,8 @@ const saveProfile = async () => {
 }
 
 const cancelBooking = async (bookingId: string) => {
-  if (!confirm('Are you sure you want to cancel this booking?')) return
+  const confirmed = await confirmCancel('Are you sure you want to cancel this booking?')
+  if (!confirmed) return
 
   try {
     const response = await classesAPI.cancelBooking(bookingId)
@@ -452,7 +455,7 @@ const cancelBooking = async (bookingId: string) => {
     }
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : 'Failed to cancel booking'
-    error.value = errorMessage
+    await alert(errorMessage, 'Error')
   }
 }
 

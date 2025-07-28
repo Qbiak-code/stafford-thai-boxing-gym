@@ -277,9 +277,11 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { galleryAPI } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
+import { useModal } from '@/composables/useModal'
 import type { GalleryImage } from '@/types'
 
 const authStore = useAuthStore()
+const { confirmDelete, alert } = useModal()
 
 // State
 const allImages = ref<GalleryImage[]>([])
@@ -402,18 +404,20 @@ const closeUploadModal = () => {
 }
 
 const deleteImage = async (imageId: string) => {
-  if (!confirm('Are you sure you want to delete this image?')) return
+  const confirmed = await confirmDelete('Are you sure you want to delete this image? This action cannot be undone.')
+  if (!confirmed) return
 
   try {
     const response = await galleryAPI.deleteImage(imageId)
     if (response.success) {
       allImages.value = allImages.value.filter(img => img.id !== imageId)
+      await alert('Image deleted successfully!', 'Success')
     } else {
-      alert(`Failed to delete image: ${response.error}`)
+      throw new Error(response.error || 'Failed to delete image')
     }
   } catch (error) {
     console.error('Delete error:', error)
-    alert('Failed to delete image. Please try again.')
+    await alert('Failed to delete image. Please try again.', 'Error')
   }
 }
 
