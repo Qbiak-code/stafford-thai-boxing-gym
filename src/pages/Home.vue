@@ -1,19 +1,16 @@
 <template>
   <div class="bg-white dark:bg-gray-900 min-h-screen">
     <!-- Hero Section -->
-    <section
-      class="hero-section relative overflow-hidden"
-      style="height: 90vh"
-    >
+    <section class="hero-section relative overflow-hidden" style="height: 90vh">
       <!-- Background Image with Multiple Overlays -->
       <div class="absolute inset-0">
         <!-- Base image -->
-        <div
-          class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        ></div>
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat"></div>
 
         <!-- Additional gradient overlay for depth -->
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30"></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30"
+        ></div>
 
         <!-- Subtle colored gradient -->
         <div class="absolute inset-0 hero-gradient-overlay"></div>
@@ -40,8 +37,18 @@
               class="group inline-flex items-center px-8 py-4 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold text-lg rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl btn-glow transform hover:scale-105"
             >
               <span>View Timetable</span>
-              <svg class="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              <svg
+                class="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                ></path>
               </svg>
             </router-link>
 
@@ -50,14 +57,23 @@
               class="group inline-flex items-center px-8 py-4 bg-red-700 hover:bg-red-800 text-white font-semibold text-lg rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               <span>Start Training</span>
-              <svg class="ml-2 w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              <svg
+                class="ml-2 w-5 h-5 group-hover:rotate-12 transition-transform"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                ></path>
               </svg>
             </router-link>
           </div>
         </div>
       </div>
-
     </section>
 
     <!-- Welcome Section -->
@@ -73,8 +89,9 @@
 
             <p class="lead-text">
               We are more than just a gym; we are a <strong class="text-gold">community</strong>
-              dedicated to the practice and philosophy of Muay Thai. Whether you're a complete beginner
-              or a seasoned competitor, our world-class coaches are here to guide you on your journey.
+              dedicated to the practice and philosophy of Muay Thai. Whether you're a complete
+              beginner or a seasoned competitor, our world-class coaches are here to guide you on
+              your journey.
             </p>
 
             <p class="supporting-text">
@@ -88,7 +105,12 @@
               <div class="feature-card feature-primary">
                 <div class="feature-icon">
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
                   </svg>
                 </div>
                 <h3 class="feature-title">Expert Training</h3>
@@ -97,7 +119,12 @@
               <div class="feature-card feature-secondary">
                 <div class="feature-icon">
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
                   </svg>
                 </div>
                 <h3 class="feature-title">Community</h3>
@@ -106,7 +133,12 @@
               <div class="feature-card feature-tertiary">
                 <div class="feature-icon">
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 </div>
                 <h3 class="feature-title">All Levels</h3>
@@ -117,11 +149,7 @@
           <!-- Image -->
           <div class="welcome-image">
             <div class="image-container">
-              <img
-                src="/src/assets/colynary.jpg"
-                alt="Muay Thai Training"
-                class="hero-image"
-              />
+              <img src="/src/assets/colynary.jpg" alt="Muay Thai Training" class="hero-image" />
             </div>
           </div>
         </div>
@@ -132,12 +160,11 @@
     <section class="philosophy-section">
       <div class="container">
         <div class="philosophy-content">
-          <h2 class="section-title-center">
-            The Art of Eight Limbs
-          </h2>
+          <h2 class="section-title-center">The Art of Eight Limbs</h2>
           <p class="lead-text-center">
-            Muay Thai utilises punches, kicks, elbows, and knees, making it one of the most comprehensive striking arts.
-            Our training emphasises proper technique, respect for tradition, and personal development both inside and outside the ring.
+            Muay Thai utilises punches, kicks, elbows, and knees, making it one of the most
+            comprehensive striking arts. Our training emphasises proper technique, respect for
+            tradition, and personal development both inside and outside the ring.
           </p>
 
           <div class="philosophy-grid">
@@ -190,12 +217,10 @@
     </section>
 
     <!-- Call to Action Section -->
-    <section class="cta-section">
+    <section class="cta-section" v-if="!authStore.isAuthenticated">
       <div class="container">
         <div class="cta-content">
-          <h2 class="section-title-center">
-            Start Your Journey Today
-          </h2>
+          <h2 class="section-title-center">Start Your Journey Today</h2>
           <p class="cta-text">
             Whether you're looking to get fit, learn self-defence, or compete at the highest level,
             we have the right programme for you.
@@ -204,9 +229,7 @@
             <router-link to="/contact" class="btn btn-primary btn-lg">
               Book Trial Class
             </router-link>
-            <router-link to="/classes" class="btn btn-ghost btn-lg">
-              View Classes
-            </router-link>
+            <router-link to="/classes" class="btn btn-ghost btn-lg"> View Classes </router-link>
           </div>
         </div>
       </div>
@@ -217,6 +240,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue"
 import { gsap } from "gsap"
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
 
 const headline = ref<HTMLElement | null>(null)
 
@@ -385,7 +410,7 @@ onMounted(() => {
 }
 
 .image-container::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: -0.5rem;
   background: var(--gradient-primary);
