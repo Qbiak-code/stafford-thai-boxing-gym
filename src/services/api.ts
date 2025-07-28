@@ -304,54 +304,6 @@ export const contactAPI = {
   }
 }
 
-// Gallery API
-export const galleryAPI = {
-  async getImages(): Promise<ApiResponse<GalleryImage[]>> {
-    try {
-      const { data, error } = await supabase
-        .from('gallery_images')
-        .select('*')
-        .order('is_featured', { ascending: false })
-        .order('sort_order', { ascending: true })
-
-      if (error) throw error
-
-      return {
-        success: true,
-        data: data || []
-      }
-    } catch (error) {
-      return {
-        success: false,
-        error: handleError(error)
-      }
-    }
-  },
-
-  async getFeaturedImages(): Promise<ApiResponse<GalleryImage[]>> {
-    try {
-      const { data, error } = await supabase
-        .from('gallery_images')
-        .select('*')
-        .eq('is_featured', true)
-        .order('sort_order', { ascending: true })
-        .limit(6)
-
-      if (error) throw error
-
-      return {
-        success: true,
-        data: data || []
-      }
-    } catch (error) {
-      return {
-        success: false,
-        error: handleError(error)
-      }
-    }
-  }
-}
-
 // Events API
 export const eventsAPI = {
   async getUpcomingEvents(): Promise<ApiResponse<Event[]>> {
@@ -446,6 +398,151 @@ export const healthAPI = {
         success: false,
         error: handleError(error),
         data: { status: 'unhealthy' }
+      }
+    }
+  }
+}
+
+
+
+// Gallery API
+export const galleryAPI = {
+  async getImages(): Promise<ApiResponse<GalleryImage[]>> {
+    try {
+      const { data, error } = await supabase
+        .from('gallery_images')
+        .select('*')
+        .order('is_featured', { ascending: false })
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      // Transform data to ensure proper URLs
+      const transformedData = data?.map(image => ({
+        ...image,
+        // Use existing image_url if it's already a full URL, otherwise construct Supabase storage URL
+        image_url: image.storage_path && !image.image_url?.startsWith('http')
+          ? `https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images/${image.storage_path}`
+          : image.image_url,
+        thumbnail_url: image.storage_path && !image.thumbnail_url?.startsWith('http')
+          ? `https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images/${image.storage_path}`
+          : image.thumbnail_url
+      })) || []
+
+      return {
+        success: true,
+        data: transformedData
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
+  },
+
+  async getFeaturedImages(): Promise<ApiResponse<GalleryImage[]>> {
+    try {
+      const { data, error } = await supabase
+        .from('gallery_images')
+        .select('*')
+        .eq('is_featured', true)
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: false })
+        .limit(6)
+
+      if (error) throw error
+
+      // Transform data to ensure proper URLs
+      const transformedData = data?.map(image => ({
+        ...image,
+        image_url: image.storage_path && !image.image_url?.startsWith('http')
+          ? `https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images/${image.storage_path}`
+          : image.image_url,
+        thumbnail_url: image.storage_path && !image.thumbnail_url?.startsWith('http')
+          ? `https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images/${image.storage_path}`
+          : image.thumbnail_url
+      })) || []
+
+      return {
+        success: true,
+        data: transformedData
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
+  },
+
+  async updateImage(
+    imageId: string,
+    updates: {
+      title?: string
+      description?: string
+      category?: string
+      is_featured?: boolean
+      sort_order?: number
+    }
+  ): Promise<ApiResponse<null>> {
+    try {
+      const { error } = await supabase
+        .from('gallery_images')
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', imageId)
+
+      if (error) throw error
+
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
+      }
+    }
+  },
+
+  async deleteImage(imageId: string): Promise<ApiResponse<null>> {
+    try {
+      // Get image data first to get storage path
+      const { data: image, error: fetchError } = await supabase
+        .from('gallery_images')
+        .select('storage_path')
+        .eq('id', imageId)
+        .single()
+
+      if (fetchError) throw fetchError
+
+      // Delete from storage if storage_path exists
+      if (image.storage_path) {
+        const { error: storageError } = await supabase.storage
+          .from('gallery-images')
+          .remove([image.storage_path])
+
+        if (storageError) {
+          console.warn('Storage deletion failed:', storageError)
+          // Continue with database deletion even if storage fails
+        }
+      }
+
+      // Delete from database
+      const { error: dbError } = await supabase
+        .from('gallery_images')
+        .delete()
+        .eq('id', imageId)
+
+      if (dbError) throw dbError
+
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        error: handleError(error)
       }
     }
   }

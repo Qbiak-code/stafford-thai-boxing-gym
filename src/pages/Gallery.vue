@@ -1,6 +1,20 @@
 <template>
   <div class="container mx-auto px-4 py-16">
-    <h1 class="text-4xl font-bold text-center mb-12">Gallery</h1>
+    <div class="flex justify-between items-center mb-12">
+      <h1 class="text-4xl font-bold">Gallery</h1>
+
+      <!-- Upload button for authenticated users -->
+      <button
+        v-if="authStore.isAuthenticated"
+        @click="showUploadModal = true"
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Upload Images
+      </button>
+    </div>
 
     <!-- Loading State -->
     <div v-if="loading" class="text-center py-12">
@@ -25,13 +39,13 @@
           <div
             v-for="image in featuredImages"
             :key="image.id"
-            class="group cursor-pointer"
+            class="group cursor-pointer relative"
             @click="openModal(image)"
           >
             <div class="rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group-hover:scale-105">
               <div class="relative">
                 <img
-                  :src="image.image_url"
+                  :src="getImageUrl(image)"
                   :alt="image.alt_text || image.title || 'Gallery image'"
                   class="w-full h-80 object-cover bg-gray-200"
                   loading="lazy"
@@ -49,6 +63,16 @@
                 <div class="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
                   Featured
                 </div>
+                <!-- Delete button for authenticated users -->
+                <button
+                  v-if="authStore.isAuthenticated"
+                  @click.stop="deleteImage(image.id)"
+                  class="absolute top-4 right-4 bg-red-600 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
               </div>
               <div class="p-6 text-center">
                 <h3 class="text-xl font-bold mb-2">{{ image.title || 'Untitled' }}</h3>
@@ -94,13 +118,13 @@
         <div
           v-for="image in filteredImages"
           :key="image.id"
-          class="group cursor-pointer"
+          class="group cursor-pointer relative"
           @click="openModal(image)"
         >
           <div class="rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group-hover:scale-105">
             <div class="relative">
               <img
-                :src="image.image_url"
+                :src="getImageUrl(image)"
                 :alt="image.alt_text || image.title || 'Gallery image'"
                 class="w-full h-80 object-cover bg-gray-200"
                 loading="lazy"
@@ -114,6 +138,16 @@
                   </svg>
                 </div>
               </div>
+              <!-- Delete button for authenticated users -->
+              <button
+                v-if="authStore.isAuthenticated"
+                @click.stop="deleteImage(image.id)"
+                class="absolute top-4 right-4 bg-red-600 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
             </div>
             <div class="p-6 text-center">
               <h3 class="text-xl font-bold mb-2">{{ image.title || 'Untitled' }}</h3>
@@ -136,9 +170,16 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
         </svg>
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Images Yet</h3>
-        <p class="text-gray-600 dark:text-gray-300">
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
           We're building our gallery. Check back soon for training photos and gym highlights!
         </p>
+        <button
+          v-if="authStore.isAuthenticated"
+          @click="showUploadModal = true"
+          class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Upload First Images
+        </button>
       </div>
     </div>
 
@@ -154,7 +195,7 @@
 
         <!-- Image -->
         <img
-          :src="selectedImage.image_url"
+          :src="getImageUrl(selectedImage)"
           :alt="selectedImage.alt_text || selectedImage.title || 'Gallery image'"
           class="max-w-full max-h-full object-contain rounded-lg"
         />
@@ -173,13 +214,72 @@
         </div>
       </div>
     </div>
+
+    <!-- Upload Modal -->
+    <div v-if="showUploadModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white dark:bg-gray-800 p-6 border-b border-gray-200 dark:border-gray-700">
+          <div class="flex justify-between items-center">
+            <h3 class="text-xl font-bold">Upload Images</h3>
+            <button @click="closeUploadModal" class="text-gray-400 hover:text-gray-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="p-6">
+          <!-- File Drop Zone -->
+          <div
+            @dragover.prevent
+            @drop.prevent="handleFileDrop"
+            @click="triggerFileInput"
+            class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:border-blue-400 transition-colors"
+          >
+            <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+            </svg>
+            <p class="text-lg font-medium text-gray-900 dark:text-white mb-2">Drop images here or click to browse</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">PNG, JPG, WebP up to 5MB each</p>
+            <input
+              ref="fileInput"
+              type="file"
+              multiple
+              accept="image/*"
+              @change="handleFileSelect"
+              class="hidden"
+            />
+          </div>
+
+          <!-- Upload Actions (simplified for now) -->
+          <div class="mt-6 flex justify-end space-x-3">
+            <button
+              @click="closeUploadModal"
+              class="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              Cancel
+            </button>
+            <button
+              @click="uploadImages"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Upload Images
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { galleryAPI } from '@/services/api'
+import { useAuthStore } from '@/stores/auth'
 import type { GalleryImage } from '@/types'
+
+const authStore = useAuthStore()
 
 // State
 const allImages = ref<GalleryImage[]>([])
@@ -187,6 +287,10 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const selectedImage = ref<GalleryImage | null>(null)
 const selectedCategory = ref<string>('all')
+
+// Upload state
+const showUploadModal = ref(false)
+const fileInput = ref<HTMLInputElement | null>(null)
 
 // Computed properties
 const featuredImages = computed(() =>
@@ -240,6 +344,15 @@ const getImagesByCategory = (category: string): GalleryImage[] => {
   return allImages.value.filter(image => (image.category || 'general') === category)
 }
 
+const getImageUrl = (image: GalleryImage): string => {
+  // If using Supabase storage path, construct the proper URL
+  if (image.storage_path) {
+    return `https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images/${image.storage_path}`
+  }
+  // Fallback to existing image_url
+  return image.image_url || 'https://via.placeholder.com/800x600/6B7280/FFFFFF?text=Image+Not+Found'
+}
+
 const openModal = (image: GalleryImage) => {
   selectedImage.value = image
   document.body.style.overflow = 'hidden'
@@ -261,10 +374,57 @@ const handleImageLoad = (event: Event) => {
   console.log('Image loaded successfully:', img.src)
 }
 
+// Upload methods (simplified for now)
+const triggerFileInput = () => {
+  fileInput.value?.click()
+}
+
+const handleFileSelect = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (target.files) {
+    console.log('Files selected:', target.files.length)
+  }
+}
+
+const handleFileDrop = (event: DragEvent) => {
+  if (event.dataTransfer?.files) {
+    console.log('Files dropped:', event.dataTransfer.files.length)
+  }
+}
+
+const uploadImages = async () => {
+  console.log('Upload images clicked - functionality coming soon')
+  closeUploadModal()
+}
+
+const closeUploadModal = () => {
+  showUploadModal.value = false
+}
+
+const deleteImage = async (imageId: string) => {
+  if (!confirm('Are you sure you want to delete this image?')) return
+
+  try {
+    const response = await galleryAPI.deleteImage(imageId)
+    if (response.success) {
+      allImages.value = allImages.value.filter(img => img.id !== imageId)
+    } else {
+      alert(`Failed to delete image: ${response.error}`)
+    }
+  } catch (error) {
+    console.error('Delete error:', error)
+    alert('Failed to delete image. Please try again.')
+  }
+}
+
 // Handle escape key
 const handleKeyDown = (event: KeyboardEvent) => {
-  if (event.key === 'Escape' && selectedImage.value) {
-    closeModal()
+  if (event.key === 'Escape') {
+    if (selectedImage.value) {
+      closeModal()
+    } else if (showUploadModal.value) {
+      closeUploadModal()
+    }
   }
 }
 

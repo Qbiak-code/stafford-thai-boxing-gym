@@ -106,7 +106,6 @@ export interface ContactSubmission {
   created_at: string
 }
 
-// Gallery & Media
 export interface GalleryImage {
   id: string
   title: string | null
@@ -116,7 +115,12 @@ export interface GalleryImage {
   alt_text: string | null
   is_featured: boolean | null
   sort_order: number | null
+  category: string | null
+  storage_path: string | null
+  file_size: number | null
+  mime_type: string | null
   created_at: string
+  updated_at?: string
 }
 
 // API Response Types

@@ -3,7 +3,11 @@
     <div class="container">
       <!-- Logo/Brand -->
       <router-link to="/" class="brand">
-        <h1 class="brand-text">Stafford Thaiboxing</h1>
+        <h1 class="brand-text">
+          <span class="inline md:hidden">Stafford Thaiboxing Gym</span>
+          <span class="hidden md:inline lg:hidden">ST</span>
+          <span class="hidden lg:inline">Stafford Thaiboxing Gym</span>
+        </h1>
       </router-link>
 
       <!-- Desktop Navigation -->
