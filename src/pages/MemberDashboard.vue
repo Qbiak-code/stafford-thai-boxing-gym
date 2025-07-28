@@ -732,8 +732,14 @@ onMounted(async () => {
 
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr; /* Stack on mobile */
   gap: 1rem;
+}
+
+@media (min-width: 480px) {
+  .form-row {
+    grid-template-columns: 1fr 1fr; /* Side by side on larger screens */
+  }
 }
 
 .form-group {

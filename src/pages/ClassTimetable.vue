@@ -22,25 +22,18 @@
         <!-- Class Type Filter -->
         <div class="filter-section">
           <h3>Filter Classes:</h3>
-          <div class="filter-buttons">
-            <button
-              :class="['filter-btn', { active: classTypeFilter === 'all' }]"
-              @click="classTypeFilter = 'all'"
+          <div class="filter-dropdown-container">
+            <select
+              v-model="classTypeFilter"
+              class="filter-dropdown"
             >
-              All Classes
-            </button>
-            <button
-              :class="['filter-btn', { active: classTypeFilter === 'group' }]"
-              @click="classTypeFilter = 'group'"
-            >
-              Group Classes
-            </button>
-            <button
-              :class="['filter-btn', { active: classTypeFilter === 'private' }]"
-              @click="classTypeFilter = 'private'"
-            >
-              Private Sessions
-            </button>
+              <option value="all">All Classes</option>
+              <option value="adult">Adult Classes</option>
+              <option value="junior">Junior Classes</option>
+              <option value="ladies">Ladies Classes</option>
+              <option value="advanced">Advanced Classes</option>
+              <option value="private">Private Sessions</option>
+            </select>
           </div>
         </div>
 
@@ -129,7 +122,7 @@
         <div class="stats-grid">
           <div class="stat-card">
             <h3>Total Classes</h3>
-            <p class="stat-number">{{ classes.length }}</p>
+            <p class="stat-number">{{ filteredClassesCount }}</p>
           </div>
           <div class="stat-card">
             <h3>Difficulty Levels</h3>
@@ -276,7 +269,7 @@ const classes = ref<ClassSession[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 const selectedClass = ref<ClassSession | null>(null)
-const classTypeFilter = ref<'all' | 'group' | 'private'>('all') // Add filter state
+const classTypeFilter = ref<'all' | 'adult' | 'junior' | 'ladies' | 'advanced' | 'private'>('all') // Updated filter state
 
 // Booking state
 const showBookingModal = ref(false)
@@ -306,13 +299,36 @@ const uniqueInstructors = computed(() => {
   return [...new Set(instructors)]
 })
 
+const filteredClassesCount = computed(() => {
+  return classes.value.filter(classItem => classItem.class_type !== 'private').length
+})
+
 const availableClassesForDate = computed(() => {
   if (!selectedBookingDate.value) return []
 
   const selectedDate = new Date(selectedBookingDate.value)
   const dayOfWeek = selectedDate.getDay() === 0 ? 7 : selectedDate.getDay() // Convert Sunday from 0 to 7
 
-  return classes.value.filter(classItem => classItem.day_of_week === dayOfWeek)
+  return classes.value.filter(classItem => {
+    // Filter by day of week
+    if (classItem.day_of_week !== dayOfWeek) return false
+
+    // Apply the same class type filter as the main timetable
+    if (classTypeFilter.value === 'adult') {
+      return classItem.class_type === 'adult' || !classItem.class_type // Default to adult if not set
+    } else if (classTypeFilter.value === 'junior') {
+      return classItem.class_type === 'junior'
+    } else if (classTypeFilter.value === 'ladies') {
+      return classItem.class_type === 'ladies'
+    } else if (classTypeFilter.value === 'advanced') {
+      return classItem.class_type === 'advanced'
+    } else if (classTypeFilter.value === 'private') {
+      return classItem.class_type === 'private'
+    }
+
+    // Show all if filter is 'all'
+    return true
+  })
 })
 
 // Check if a class is already booked for a specific date
@@ -414,8 +430,14 @@ const getClassesForDay = (dayIndex: number): ClassSession[] => {
       if (classItem.day_of_week !== dayIndex) return false
 
       // Filter by class type
-      if (classTypeFilter.value === 'group') {
-        return classItem.class_type === 'group' || !classItem.class_type // Default to group if not set
+      if (classTypeFilter.value === 'adult') {
+        return classItem.class_type === 'adult' || !classItem.class_type // Default to adult if not set
+      } else if (classTypeFilter.value === 'junior') {
+        return classItem.class_type === 'junior'
+      } else if (classTypeFilter.value === 'ladies') {
+        return classItem.class_type === 'ladies'
+      } else if (classTypeFilter.value === 'advanced') {
+        return classItem.class_type === 'advanced'
       } else if (classTypeFilter.value === 'private') {
         return classItem.class_type === 'private'
       }
@@ -683,14 +705,12 @@ h1 {
   margin-bottom: 1rem;
 }
 
-.filter-buttons {
+.filter-dropdown-container {
   display: flex;
   justify-content: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
 }
 
-.filter-btn {
+.filter-dropdown {
   padding: 0.75rem 1.5rem;
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
@@ -702,15 +722,9 @@ h1 {
   transition: all 0.3s ease;
 }
 
-.filter-btn:hover {
+.filter-dropdown:hover {
   background-color: var(--hover-bg);
   color: var(--text-primary);
-  border-color: var(--accent-gold);
-}
-
-.filter-btn.active {
-  background-color: var(--accent-gold);
-  color: var(--bg-primary);
   border-color: var(--accent-gold);
 }
 
@@ -988,6 +1002,9 @@ h1 {
   max-width: 28rem;
   width: 100%;
   box-shadow: var(--shadow-strong);
+  max-height: 80vh; /* Limit modal height on mobile */
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-header {
@@ -1025,6 +1042,28 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  overflow-y: auto; /* Enable scrolling for modal body */
+  flex: 1; /* Allow modal body to take available space */
+}
+
+/* Make class options list scrollable on mobile */
+.class-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 30vh; /* Limit height on mobile */
+  overflow-y: auto; /* Enable scrolling */
+  padding-right: 0.25rem; /* Space for scrollbar */
+}
+
+@media (min-width: 768px) {
+  .modal-content {
+    max-height: 85vh; /* Slightly less restrictive on larger screens */
+  }
+
+  .class-options {
+    max-height: 40vh; /* More space on larger screens */
+  }
 }
 
 .date-selection label,
@@ -1043,13 +1082,6 @@ h1 {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-size: 1rem;
-}
-
-.class-options {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
 }
 
 .class-option {
