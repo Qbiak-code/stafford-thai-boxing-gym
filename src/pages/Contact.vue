@@ -74,6 +74,20 @@
                 </button>
               </form>
 
+              <!-- WhatsApp CTA -->
+              <div class="whatsapp-cta">
+                <div class="cta-content">
+                  <h3>Need a quick response?</h3>
+                  <p>Message us directly on WhatsApp for instant support</p>
+                  <WhatsAppButton
+                    variant="button"
+                    text="Message on WhatsApp"
+                    phone-number="+447813449416"
+                    message="Hi! I'd like to know more about classes at Stafford Thai Boxing Gym."
+                  />
+                </div>
+              </div>
+
               <!-- Status Message -->
               <div
                 v-if="statusMessage"
@@ -223,8 +237,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue"
-import { supabase } from "@/lib/supabase"
+import { reactive, ref } from 'vue'
+import { supabase } from '@/lib/supabase'
+import WhatsAppButton from '@/components/WhatsAppButton.vue'
 
 // Form data
 const formData = reactive({
@@ -260,10 +275,20 @@ const handleSubmit = async () => {
     isSuccess.value = true
 
     // Clear form
-    Object.assign(formData, { name: "", email: "", subject: "", message: "" })
-  } catch (err: any) {
-    statusMessage.value = err.message || "Failed to send message. Please try again."
+    Object.assign(formData, {
+      name: "",
+      email: "",
+      phone: "",
+      subject: "",
+      message: "",
+      isMember: false
+    })
+  } catch (error: unknown) {
+    statusMessage.value = error instanceof Error
+      ? error.message
+      : "Failed to send message. Please try again."
     isSuccess.value = false
+    console.error("Contact form submission error:", error)
   } finally {
     submitting.value = false
   }
@@ -461,6 +486,11 @@ const handleSubmit = async () => {
   flex-shrink: 0;
 }
 
+/* WhatsApp specific styling */
+.contact-icon.whatsapp-icon {
+  background-color: #25D366;
+}
+
 .contact-icon svg {
   width: 1.25rem;
   height: 1.25rem;
@@ -478,6 +508,34 @@ const handleSubmit = async () => {
   color: var(--text-secondary);
   margin: 0 0 0.25rem 0;
   line-height: 1.4;
+}
+
+/* WhatsApp CTA styling */
+.whatsapp-cta {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(37, 211, 102, 0.1) 0%, rgba(37, 211, 102, 0.05) 100%);
+  border: 1px solid rgba(37, 211, 102, 0.2);
+  border-radius: 0.75rem;
+  text-align: center;
+}
+
+.cta-content h3 {
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.cta-content p {
+  color: var(--text-secondary);
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+}
+
+.contact-whatsapp-btn {
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
 }
 
 /* Hours Card */
