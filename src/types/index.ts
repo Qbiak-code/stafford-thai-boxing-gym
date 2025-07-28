@@ -45,6 +45,7 @@ export interface ClassSession {
   end_time: string
   max_capacity: number | null
   description: string | null
+  class_type: 'group' | 'private' | null
   is_active: boolean | null
   created_at: string
 }

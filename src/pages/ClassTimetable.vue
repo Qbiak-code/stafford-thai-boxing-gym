@@ -19,6 +19,31 @@
 
       <!-- Weekly Schedule -->
       <div v-if="!loading && !error" class="timetable-container">
+        <!-- Class Type Filter -->
+        <div class="filter-section">
+          <h3>Filter Classes:</h3>
+          <div class="filter-buttons">
+            <button
+              :class="['filter-btn', { active: classTypeFilter === 'all' }]"
+              @click="classTypeFilter = 'all'"
+            >
+              All Classes
+            </button>
+            <button
+              :class="['filter-btn', { active: classTypeFilter === 'group' }]"
+              @click="classTypeFilter = 'group'"
+            >
+              Group Classes
+            </button>
+            <button
+              :class="['filter-btn', { active: classTypeFilter === 'private' }]"
+              @click="classTypeFilter = 'private'"
+            >
+              Private Sessions
+            </button>
+          </div>
+        </div>
+
         <div class="timetable-grid">
           <div
             v-for="dayIndex in [1, 2, 3, 4, 5, 6, 7]"
@@ -28,6 +53,15 @@
             <!-- Day Header -->
             <div class="day-header">
               <h3>{{ weekDays[dayIndex] }}</h3>
+              <div class="day-dates">
+                <span
+                  v-for="date in getNext7DatesForDay(dayIndex)"
+                  :key="date"
+                  class="day-date"
+                >
+                  {{ formatDayDate(date) }}
+                </span>
+              </div>
             </div>
 
             <!-- Classes for this day -->
@@ -46,11 +80,35 @@
                   <p class="class-instructor" v-if="classItem.instructor">
                     {{ classItem.instructor }}
                   </p>
+
+                  <!-- Booking indicators -->
+                  <div v-if="authStore.isAuthenticated && getBookedDatesForClass(classItem.id).length > 0" class="booking-indicators">
+                    <div class="booking-badge">
+                      <svg class="booking-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>{{ getBookedDatesForClass(classItem.id).length }} booked</span>
+                    </div>
+                    <!-- Show next booked date -->
+                    <div class="next-booking">
+                      Next: {{ formatDate(getBookedDatesForClass(classItem.id)[0]) }}
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Booking Button for Authenticated Users -->
                 <div v-if="authStore.isAuthenticated" class="class-actions">
+                  <!-- Show Cancel button if user has bookings for this class in next 7 days -->
                   <button
+                    v-if="hasUpcomingBookingsForClass(classItem.id)"
+                    @click.stop="cancelClassBookings(classItem.id)"
+                    class="btn btn-secondary btn-sm"
+                  >
+                    Cancel
+                  </button>
+                  <!-- Show Book button otherwise -->
+                  <button
+                    v-else
                     @click.stop="openBookingModal(classItem)"
                     class="btn btn-primary btn-sm"
                   >
@@ -130,6 +188,7 @@
                 v-model="selectedBookingDate"
                 type="date"
                 :min="today"
+                :max="maxBookingDateString"
                 class="date-input"
                 @change="onDateChange"
               />
@@ -142,13 +201,24 @@
                   v-for="classOption in availableClassesForDate"
                   :key="classOption.id"
                   class="class-option"
-                  :class="{ 'selected': selectedClassForBooking?.id === classOption.id }"
-                  @click="selectClass(classOption)"
+                  :class="{
+                    'selected': selectedClassForBooking?.id === classOption.id,
+                    'disabled': isClassBookedForDate(classOption.id, selectedBookingDate)
+                  }"
+                  @click="!isClassBookedForDate(classOption.id, selectedBookingDate) && selectClass(classOption)"
                 >
                   <div class="class-option-info">
                     <h4>{{ classOption.name }}</h4>
                     <p>{{ formatTime(classOption.start_time) }} - {{ formatTime(classOption.end_time) }}</p>
                     <p class="instructor" v-if="classOption.instructor">{{ classOption.instructor }}</p>
+
+                    <!-- Already booked indicator -->
+                    <div v-if="isClassBookedForDate(classOption.id, selectedBookingDate)" class="already-booked">
+                      <svg class="booked-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>Already booked</span>
+                    </div>
                   </div>
                   <div class="class-option-select">
                     <div class="radio-button" :class="{ 'selected': selectedClassForBooking?.id === classOption.id }"></div>
@@ -176,6 +246,11 @@
               </button>
             </div>
 
+            <!-- Show message when no class is selected -->
+            <div v-if="selectedBookingDate && availableClassesForDate.length > 0 && !selectedClassForBooking" class="selection-hint">
+              <p>Please select a class above to continue</p>
+            </div>
+
             <div v-if="bookingError" class="error-message">
               {{ bookingError }}
             </div>
@@ -191,7 +266,7 @@ import { ref, computed, onMounted } from 'vue'
 import { classesAPI } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import { useModal } from '@/composables/useModal'
-import type { ClassSession } from '@/types'
+import type { ClassSession, ClassBooking } from '@/types'
 
 const authStore = useAuthStore()
 const { confirm, alert } = useModal()
@@ -201,6 +276,7 @@ const classes = ref<ClassSession[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 const selectedClass = ref<ClassSession | null>(null)
+const classTypeFilter = ref<'all' | 'group' | 'private'>('all') // Add filter state
 
 // Booking state
 const showBookingModal = ref(false)
@@ -208,12 +284,16 @@ const selectedClassForBooking = ref<ClassSession | null>(null)
 const selectedBookingDate = ref('')
 const bookingLoading = ref(false)
 const bookingError = ref<string | null>(null)
+const userBookings = ref<ClassBooking[]>([]) // Track user's bookings
 
 // Week days (1 = Monday, 2 = Tuesday, ..., 7 = Sunday)
 const weekDays = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
-// Today's date for min date restriction
+// Today's date and 7-day limit for booking
 const today = new Date().toISOString().split('T')[0]
+const maxBookingDate = new Date()
+maxBookingDate.setDate(maxBookingDate.getDate() + 6)
+const maxBookingDateString = maxBookingDate.toISOString().split('T')[0]
 
 // Computed properties
 const uniqueDifficultyLevels = computed(() => {
@@ -235,19 +315,89 @@ const availableClassesForDate = computed(() => {
   return classes.value.filter(classItem => classItem.day_of_week === dayOfWeek)
 })
 
+// Check if a class is already booked for a specific date
+const isClassBookedForDate = (classId: string, date: string): boolean => {
+  return userBookings.value.some(booking =>
+    booking.class_id === classId &&
+    booking.booking_date === date &&
+    booking.status === 'confirmed'
+  )
+}
+
+// Get booked dates for a specific class (for timetable indicators)
+const getBookedDatesForClass = (classId: string): string[] => {
+  return userBookings.value
+    .filter(booking =>
+      booking.class_id === classId &&
+      booking.status === 'confirmed' &&
+      new Date(booking.booking_date) >= new Date() // Only future bookings
+    )
+    .map(booking => booking.booking_date)
+    .sort()
+}
+
+// Check if user has upcoming bookings for a class (within next 7 days)
+const hasUpcomingBookingsForClass = (classId: string): boolean => {
+  const today = new Date()
+  const nextWeek = new Date()
+  nextWeek.setDate(today.getDate() + 7)
+
+  return userBookings.value.some(booking =>
+    booking.class_id === classId &&
+    booking.status === 'confirmed' &&
+    new Date(booking.booking_date) >= today &&
+    new Date(booking.booking_date) <= nextWeek
+  )
+}
+
+// Get next 7 dates for a specific day of week
+const getNext7DatesForDay = (dayOfWeek: number): string[] => {
+  const dates: string[] = []
+  const today = new Date()
+
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(today)
+    date.setDate(today.getDate() + i)
+
+    const currentDay = date.getDay() === 0 ? 7 : date.getDay()
+    if (currentDay === dayOfWeek) {
+      dates.push(date.toISOString().split('T')[0])
+    }
+  }
+
+  return dates
+}
+
+// Format day date for display (e.g., "29 Jul")
+const formatDayDate = (dateString: string): string => {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short'
+  })
+}
+
 // Methods
 const loadClasses = async () => {
   loading.value = true
   error.value = null
 
   try {
-    const response = await classesAPI.getSchedule()
+    const [classesResponse, bookingsResponse] = await Promise.all([
+      classesAPI.getSchedule(),
+      authStore.isAuthenticated ? classesAPI.getUserBookings() : Promise.resolve({ success: true, data: [] })
+    ])
 
-    if (response.success && response.data) {
-      classes.value = response.data
+    if (classesResponse.success && classesResponse.data) {
+      classes.value = classesResponse.data
     } else {
-      throw new Error(response.error || 'Failed to load classes')
+      throw new Error(classesResponse.error || 'Failed to load classes')
     }
+
+    if (bookingsResponse.success && bookingsResponse.data) {
+      userBookings.value = bookingsResponse.data
+    }
+
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : 'Failed to load class schedule'
     error.value = errorMessage
@@ -259,7 +409,20 @@ const loadClasses = async () => {
 
 const getClassesForDay = (dayIndex: number): ClassSession[] => {
   return classes.value
-    .filter(classItem => classItem.day_of_week === dayIndex)
+    .filter(classItem => {
+      // Filter by day
+      if (classItem.day_of_week !== dayIndex) return false
+
+      // Filter by class type
+      if (classTypeFilter.value === 'group') {
+        return classItem.class_type === 'group' || !classItem.class_type // Default to group if not set
+      } else if (classTypeFilter.value === 'private') {
+        return classItem.class_type === 'private'
+      }
+
+      // Show all if filter is 'all'
+      return true
+    })
     .sort((a, b) => a.start_time.localeCompare(b.start_time))
 }
 
@@ -302,22 +465,28 @@ const closeBookingModal = () => {
 }
 
 const onDateChange = () => {
-  // When date changes, check if current selected class is still available
+  // When date changes, check if current selected class is still available and not booked
   if (selectedClassForBooking.value && availableClassesForDate.value.length > 0) {
     const classStillAvailable = availableClassesForDate.value.find(
       c => c.id === selectedClassForBooking.value?.id
     )
 
-    if (!classStillAvailable) {
-      // If current class isn't available on this day, select the first available class
-      selectedClassForBooking.value = availableClassesForDate.value[0]
+    // If current class isn't available on this day OR is already booked, clear selection
+    if (!classStillAvailable || isClassBookedForDate(selectedClassForBooking.value.id, selectedBookingDate.value)) {
+      selectedClassForBooking.value = null
     }
-  } else if (availableClassesForDate.value.length > 0) {
-    // If no class was selected, select the first available
-    selectedClassForBooking.value = availableClassesForDate.value[0]
-  } else {
-    // No classes available on this date
-    selectedClassForBooking.value = null
+  }
+
+  // Don't auto-select anything - let user choose
+  if (!selectedClassForBooking.value) {
+    // Only auto-select if there's exactly one available, unbookable class
+    const availableUnbookedClasses = availableClassesForDate.value.filter(
+      c => !isClassBookedForDate(c.id, selectedBookingDate.value)
+    )
+
+    if (availableUnbookedClasses.length === 1) {
+      selectedClassForBooking.value = availableUnbookedClasses[0]
+    }
   }
 }
 
@@ -334,11 +503,18 @@ const formatSelectedDate = (dateString: string): string => {
   })
 }
 
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-GB', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short'
+  })
+}
+
 const confirmBooking = async () => {
   if (!selectedClassForBooking.value || !selectedBookingDate.value) return
 
-  // Replace: alert('Class booked successfully!')
-  // With custom modal
   const confirmed = await confirm(
     `Book "${selectedClassForBooking.value.name}" on ${formatSelectedDate(selectedBookingDate.value)} at ${formatTime(selectedClassForBooking.value.start_time)}?`,
     'Confirm Booking'
@@ -356,6 +532,26 @@ const confirmBooking = async () => {
     )
 
     if (response.success) {
+      // Add booking to local state immediately for better UX
+      const newBooking = {
+        id: `temp-${Date.now()}`, // Temporary ID
+        user_id: authStore.user?.id || '',
+        class_id: selectedClassForBooking.value.id,
+        booking_date: selectedBookingDate.value,
+        status: 'confirmed' as const,
+        created_at: new Date().toISOString(),
+        class: selectedClassForBooking.value
+      }
+      userBookings.value.push(newBooking)
+
+      // Refresh from server to get real booking data
+      if (authStore.isAuthenticated) {
+        const bookingsResponse = await classesAPI.getUserBookings()
+        if (bookingsResponse.success && bookingsResponse.data) {
+          userBookings.value = bookingsResponse.data
+        }
+      }
+
       closeBookingModal()
       await alert('Class booked successfully!', 'Success')
     } else {
@@ -364,8 +560,48 @@ const confirmBooking = async () => {
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : 'Failed to book class'
     bookingError.value = errorMessage
+    console.error('Booking error:', err)
   } finally {
     bookingLoading.value = false
+  }
+}
+
+const cancelClassBookings = async (classId: string) => {
+  const bookingsToCancel = userBookings.value.filter(booking =>
+    booking.class_id === classId &&
+    booking.status === 'confirmed' &&
+    new Date(booking.booking_date) >= new Date()
+  )
+
+  if (bookingsToCancel.length === 0) return
+
+  const confirmed = await confirm(
+    `Cancel ${bookingsToCancel.length} upcoming booking${bookingsToCancel.length > 1 ? 's' : ''} for this class?`,
+    'Cancel Bookings'
+  )
+
+  if (!confirmed) return
+
+  try {
+    for (const booking of bookingsToCancel) {
+      await classesAPI.cancelBooking(booking.id)
+    }
+
+    // Remove cancelled bookings from local state immediately
+    userBookings.value = userBookings.value.filter(booking =>
+      !bookingsToCancel.some(cancelled => cancelled.id === booking.id)
+    )
+
+    // Also refresh from server to ensure consistency
+    const bookingsResponse = await classesAPI.getUserBookings()
+    if (bookingsResponse.success && bookingsResponse.data) {
+      userBookings.value = bookingsResponse.data
+    }
+
+    await alert('Bookings cancelled successfully!', 'Success')
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Failed to cancel bookings'
+    await alert(errorMessage, 'Error')
   }
 }
 
@@ -434,6 +670,50 @@ h1 {
   margin-bottom: 2rem;
 }
 
+/* Filter Section */
+.filter-section {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.filter-section h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.filter-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+  background-color: var(--hover-bg);
+  color: var(--text-primary);
+  border-color: var(--accent-gold);
+}
+
+.filter-btn.active {
+  background-color: var(--accent-gold);
+  color: var(--bg-primary);
+  border-color: var(--accent-gold);
+}
+
 /* Timetable Layout */
 .timetable-container {
   display: flex;
@@ -496,9 +776,21 @@ h1 {
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin: 0;
+  margin: 0 0 0.5rem 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.day-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.day-date {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 400;
 }
 
 /* Classes Container */
@@ -551,6 +843,34 @@ h1 {
   color: var(--accent-gold);
   margin: 0;
   line-height: 1.3;
+}
+
+.booking-indicators {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.booking-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.625rem;
+  color: var(--accent-gold);
+  font-weight: 500;
+}
+
+.booking-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  flex-shrink: 0;
+}
+
+.next-booking {
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  padding-left: 1rem;
 }
 
 .class-actions {
@@ -754,6 +1074,18 @@ h1 {
   background-color: var(--bg-tertiary);
 }
 
+.class-option.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--bg-tertiary);
+}
+
+.class-option.disabled:hover {
+  border-color: var(--border-color);
+  box-shadow: none;
+  transform: none;
+}
+
 .class-option-info h4 {
   font-size: 0.875rem;
   font-weight: 600;
@@ -770,6 +1102,22 @@ h1 {
 .class-option-info .instructor {
   color: var(--accent-gold);
   margin: 0;
+}
+
+.already-booked {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+  color: var(--accent-gold);
+  font-size: 0.625rem;
+  font-weight: 500;
+}
+
+.booked-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  flex-shrink: 0;
 }
 
 .radio-button {
@@ -797,6 +1145,11 @@ h1 {
   border-radius: 50%;
 }
 
+.class-option.disabled .radio-button {
+  border-color: var(--text-muted);
+  opacity: 0.5;
+}
+
 .no-classes {
   text-align: center;
   padding: 2rem;
@@ -821,5 +1174,15 @@ h1 {
   padding: 1rem;
   border-radius: 0.5rem;
   font-size: 0.875rem;
+}
+
+.selection-hint {
+  text-align: center;
+  padding: 1rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-style: italic;
+  border-top: 1px solid var(--border-color);
+  margin-top: 1rem;
 }
 </style>

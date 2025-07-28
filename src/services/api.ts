@@ -77,6 +77,36 @@ export const classesAPI = {
     try {
       const userId = await getCurrentUserId()
 
+      // First check if there's an existing booking (including cancelled ones)
+      const { data: existingBooking, error: checkError } = await supabase
+        .from('class_bookings')
+        .select('id, status')
+        .eq('class_id', classId)
+        .eq('user_id', userId)
+        .eq('booking_date', bookingDate)
+        .maybeSingle()
+
+      if (checkError) throw checkError
+
+      if (existingBooking) {
+        if (existingBooking.status === 'confirmed') {
+          throw new Error('You already have a booking for this class on this date')
+        } else if (existingBooking.status === 'cancelled') {
+          // Reactivate the cancelled booking
+          const { error: updateError } = await supabase
+            .from('class_bookings')
+            .update({
+              status: 'confirmed',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingBooking.id)
+
+          if (updateError) throw updateError
+          return { success: true }
+        }
+      }
+
+      // Create new booking if none exists
       const { error } = await supabase
         .from('class_bookings')
         .insert({
