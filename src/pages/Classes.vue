@@ -160,7 +160,7 @@ const classes = [
     description: "High-energy cardio workout using Muay Thai techniques. Great for fitness without the contact.",
     duration: "50 minutes",
     schedule: "Mon, Wed, Fri - 8:00 AM",
-    img: "https://picsum.photos/id/1020/400/300",
+    img: "https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images//roman-aguila-nfZKyKlGujs-unsplash.jpg",
   },
   {
     id: 6,

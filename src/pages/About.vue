@@ -41,7 +41,7 @@
 
           <div class="story-image">
             <img
-              src="https://picsum.photos/id/211/800/600"
+              src="https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images//7a8800a5-5f14-486c-b790-93bc4bd4054f.JPG"
               alt="Gym Interior"
               class="featured-image"
             />
@@ -170,21 +170,7 @@ const coaches = [
       "\n" +
       "We welcome juniors aged 8–15 and adults of all levels. Whatever your goals, we’ll help you reach them.",
     img: "https://picsum.photos/id/1005/400/400",
-    specialties: ["Traditional Muay Thai", "Competition Prep", "Technique Development"]
-  },
-  {
-    name: "Sarah Johnson",
-    title: "Senior Instructor",
-    bio: "Former competitive fighter turned instructor, Sarah specializes in helping beginners build confidence and proper fundamentals.",
-    img: "https://picsum.photos/id/1011/400/400",
-    specialties: ["Beginner Training", "Women's Classes", "Fitness Conditioning"]
-  },
-  {
-    name: "Mike Wilson",
-    title: "Strength & Conditioning Coach",
-    bio: "Mike focuses on building the physical foundation needed for Muay Thai through targeted strength and conditioning programs.",
-    img: "https://picsum.photos/id/1025/400/400",
-    specialties: ["Strength Training", "Athletic Performance", "Injury Prevention"]
+    specialties: ["Beginner Training", "Women's Classes", "Fitness Conditioning", "Competition Prep", "Technique Development"]
   }
 ]
 </script>
@@ -336,13 +322,13 @@ const coaches = [
 
 @media (min-width: 768px) {
   .coaches-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
   }
 }
 
 @media (min-width: 1024px) {
   .coaches-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(1, 1fr);
   }
 }
 

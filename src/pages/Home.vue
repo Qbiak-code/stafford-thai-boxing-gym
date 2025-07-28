@@ -149,7 +149,7 @@
           <!-- Image -->
           <div class="welcome-image">
             <div class="image-container">
-              <img src="/src/assets/colynary.jpg" alt="Muay Thai Training" class="hero-image" />
+              <img src="https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images//colynary-media-inAxUskIN-I-unsplash.jpg" alt="Muay Thai Training" class="hero-image" />
             </div>
           </div>
         </div>
@@ -561,6 +561,6 @@ onMounted(() => {
 .hero-section {
   background:
     linear-gradient(135deg, var(--bg-primary), rgba(28, 28, 28, 0.3)),
-    url("/src/assets/hero-bg.jpg") center/cover;
+    url("https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images//hero-bg.jpg") center/cover;
 }
 </style>
