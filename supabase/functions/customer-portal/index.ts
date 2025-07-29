@@ -1,7 +1,7 @@
 // supabase/functions/customer-portal/index.ts
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
-import Stripe from 'https://esm.sh/stripe@16.12.0';
+import Stripe from 'https://esm.sh/stripe@17.3.0';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -47,7 +47,7 @@ serve(async (req)=>{
     });
     // Initialize Stripe with latest API version
     const stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2024-06-20',
+      apiVersion: '2025-06-30.basil',
       httpClient: Stripe.createFetchHttpClient()
     });
     // Get authorization header
@@ -84,33 +84,81 @@ serve(async (req)=>{
     const { returnUrl } = await req.json();
     // Get user's Stripe customer ID
     const { data: profile, error: profileError } = await supabase.from('profiles').select('stripe_customer_id').eq('id', user.id).single();
+
     if (profileError || !profile?.stripe_customer_id) {
-      console.error('❌ No Stripe customer ID found for user');
+      console.log('ℹ️ Stripe customer ID not found in profile, checking subscription records...');
+
+      // Try to find customer ID through active subscription
+      const { data: subscription, error: subError } = await supabase
+        .from('user_subscriptions')
+        .select('stripe_customer_id')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (subError || !subscription?.stripe_customer_id) {
+        console.error('❌ No active subscription with customer ID found');
+        return new Response(JSON.stringify({
+          error: 'No subscription found. Please subscribe first.'
+        }), {
+          status: 404,
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json'
+          }
+        });
+      }
+
+      // Update profile with found customer ID for future use
+      await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          stripe_customer_id: subscription.stripe_customer_id,
+          updated_at: new Date().toISOString()
+        });
+
+      console.log('✅ Customer ID retrieved from subscription and saved to profile');
+
+      // Create Stripe customer portal session
+      const session = await stripe.billingPortal.sessions.create({
+        customer: subscription.stripe_customer_id,
+        return_url: returnUrl || 'http://localhost:5173/member/dashboard',
+        // Simplified configuration for compatibility with API version 2025-06-30.basil
+        locale: 'en-GB',
+      });
+
+      console.log('✅ Customer portal session created');
       return new Response(JSON.stringify({
-        error: 'No subscription found. Please subscribe first.'
+        url: session.url
       }), {
-        status: 404,
+        status: 200,
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        }
+      });
+    } else {
+      // Create Stripe customer portal session
+      const session = await stripe.billingPortal.sessions.create({
+        customer: profile.stripe_customer_id,
+        return_url: returnUrl || 'http://localhost:5173/member/dashboard',
+        // Simplified configuration for compatibility with API version 2025-06-30.basil
+        locale: 'en-GB',
+      });
+      console.log('✅ Customer portal session created');
+      return new Response(JSON.stringify({
+        url: session.url
+      }), {
+        status: 200,
         headers: {
           ...corsHeaders,
           'Content-Type': 'application/json'
         }
       });
     }
-    // Create Stripe customer portal session
-    const session = await stripe.billingPortal.sessions.create({
-      customer: profile.stripe_customer_id,
-      return_url: returnUrl || 'http://localhost:5173/member/dashboard'
-    });
-    console.log('✅ Customer portal session created');
-    return new Response(JSON.stringify({
-      url: session.url
-    }), {
-      status: 200,
-      headers: {
-        ...corsHeaders,
-        'Content-Type': 'application/json'
-      }
-    });
   } catch (error) {
     console.error('💥 Function error:', error);
     return new Response(JSON.stringify({

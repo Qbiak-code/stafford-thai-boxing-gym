@@ -1,7 +1,7 @@
 // supabase/functions/create-checkout-session/index.ts
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0'
-import Stripe from 'https://esm.sh/stripe@16.12.0'
+import Stripe from 'https://esm.sh/stripe@17.3.0'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -55,7 +55,7 @@ serve(async (req) => {
 
     // Initialize Stripe with latest API version
     const stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2024-06-20',
+      apiVersion: '2025-06-30.basil',
       httpClient: Stripe.createFetchHttpClient(),
     })
 
@@ -171,11 +171,17 @@ serve(async (req) => {
         supabase_user_id: user.id,
         plan_id: planId,
       },
-      // UK-specific settings
+      // UK-specific settings - simplified for compatibility
       billing_address_collection: 'required',
-      tax_id_collection: {
-        enabled: false, // VAT already included in price
+      customer_update: {
+        address: 'auto',
+        name: 'auto',
       },
+      automatic_tax: {
+        enabled: false, // VAT already included in price for UK
+      },
+      // Enhanced UK compliance features
+      locale: 'en-GB',
     })
 
     console.log('✅ Checkout session created:', session.id)
