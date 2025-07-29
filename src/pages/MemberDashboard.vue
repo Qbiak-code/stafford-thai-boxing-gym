@@ -19,6 +19,15 @@
         <button @click="loadDashboardData" class="btn btn-ghost btn-sm">Try again</button>
       </div>
 
+      <!-- Payment Success Processing -->
+      <div v-if="isProcessingSuccess" class="processing-overlay">
+        <div class="processing-content">
+          <div class="spinner large"></div>
+          <h3>Processing Payment Success...</h3>
+          <p>Updating your subscription status</p>
+        </div>
+      </div>
+
       <!-- Dashboard Content -->
       <div v-if="!isLoading && authStore.user" class="dashboard-content">
         <!-- Quick Stats -->
@@ -147,22 +156,48 @@
                   </div>
                   <div class="subscription-meta">
                     <p><strong>Status:</strong> {{ currentSubscription.status }}</p>
-                    <p v-if="currentSubscription.next_billing_date">
+                    <p v-if="currentSubscription.current_period_end">
                       <strong>Next billing:</strong>
-                      {{ formatDate(currentSubscription.next_billing_date) }}
+                      {{ formatDate(currentSubscription.current_period_end) }}
+                    </p>
+                    <p v-if="currentSubscription.stripe_subscription_id">
+                      <strong>Subscription ID:</strong>
+                      {{ currentSubscription.stripe_subscription_id.substring(0, 15) }}...
                     </p>
                   </div>
                   <div class="subscription-actions">
-                    <router-link to="/subscriptions" class="btn btn-ghost">
-                      Manage Subscription
-                    </router-link>
+                    <button
+                      @click="openCustomerPortal"
+                      :disabled="managingSubscription"
+                      class="btn btn-primary"
+                    >
+                      {{ managingSubscription ? "Loading..." : "Manage Subscription" }}
+                    </button>
+                    <button
+                      @click="cancelSubscription"
+                      :disabled="managingSubscription"
+                      class="btn btn-ghost btn-sm"
+                    >
+                      Cancel Subscription
+                    </button>
                   </div>
                 </div>
                 <div v-else class="no-subscription">
-                  <p>No active subscription</p>
-                  <router-link to="/subscriptions" class="btn btn-primary">
-                    Choose Plan
-                  </router-link>
+                  <div class="no-subscription-content">
+                    <svg class="no-subscription-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                      />
+                    </svg>
+                    <h4>No Active Subscription</h4>
+                    <p>Choose a membership plan to start training</p>
+                    <router-link to="/subscriptions" class="btn btn-primary">
+                      Choose Plan
+                    </router-link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -245,7 +280,7 @@
                     </div>
                   </router-link>
 
-                  <router-link to="/subscriptions" class="action-item">
+                  <button @click="openCustomerPortal" class="action-item action-button" v-if="currentSubscription">
                     <div class="action-icon action-icon-secondary">
                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -257,8 +292,25 @@
                       </svg>
                     </div>
                     <div class="action-content">
-                      <h4>Manage Subscription</h4>
-                      <p>Change or cancel plan</p>
+                      <h4>Billing Portal</h4>
+                      <p>Manage payments & invoices</p>
+                    </div>
+                  </button>
+
+                  <router-link to="/subscriptions" class="action-item" v-else>
+                    <div class="action-icon action-icon-secondary">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                        />
+                      </svg>
+                    </div>
+                    <div class="action-content">
+                      <h4>Get Subscription</h4>
+                      <p>Choose membership plan</p>
                     </div>
                   </router-link>
 
@@ -279,7 +331,7 @@
                     </div>
                   </router-link>
 
-                  <button @click="signOut" class="action-item logout-action">
+                  <button @click="signOut" class="action-item action-button logout-action">
                     <div class="action-icon action-icon-logout">
                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -312,19 +364,24 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from "vue"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { useAuthStore } from "@/stores/auth"
 import { useModal } from "@/composables/useModal"
+import { usePaymentSuccess } from "@/composables/usePaymentSuccess"
 import { subscriptionsAPI, classesAPI, profileAPI } from "@/services/api"
+import { stripeService } from "@/services/stripe"
 import type { UserSubscription, ClassBooking, UserProfile } from "@/types"
 
-const authStore = useAuthStore()
+const route = useRoute()
 const router = useRouter()
-const { confirmCancel, alert } = useModal()
+const authStore = useAuthStore()
+const { confirmCancel, alert, confirm } = useModal()
+const { isProcessingSuccess } = usePaymentSuccess()
 
 // State
 const isLoading = ref(false)
 const savingProfile = ref(false)
+const managingSubscription = ref(false)
 const error = ref<string | null>(null)
 const successMessage = ref<string | null>(null)
 
@@ -422,6 +479,65 @@ const saveProfile = async () => {
   }
 }
 
+const openCustomerPortal = async () => {
+  if (!currentSubscription.value) {
+    await alert("You need an active subscription to access the billing portal.", "No Subscription")
+    return
+  }
+
+  managingSubscription.value = true
+
+  try {
+    const response = await subscriptionsAPI.getCustomerPortalUrl()
+
+    if (response.success && response.data?.url) {
+      // Redirect to Stripe Customer Portal
+      window.location.href = response.data.url
+    } else {
+      throw new Error(response.error || "Failed to open customer portal")
+    }
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to open customer portal"
+    await alert(errorMessage, "Error")
+  } finally {
+    managingSubscription.value = false
+  }
+}
+
+const cancelSubscription = async () => {
+  if (!currentSubscription.value) return
+
+  const confirmed = await confirm(
+    "Are you sure you want to cancel your subscription? You'll lose access to all premium features at the end of your current billing period.",
+    "Cancel Subscription"
+  )
+
+  if (!confirmed) return
+
+  managingSubscription.value = true
+
+  try {
+    const response = await subscriptionsAPI.cancelSubscription()
+
+    if (response.success) {
+      await alert(
+        "Your subscription has been cancelled. You'll continue to have access until the end of your current billing period.",
+        "Subscription Cancelled"
+      )
+
+      // Refresh subscription data
+      await loadDashboardData()
+    } else {
+      throw new Error(response.error || "Failed to cancel subscription")
+    }
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Failed to cancel subscription"
+    await alert(errorMessage, "Error")
+  } finally {
+    managingSubscription.value = false
+  }
+}
+
 const cancelBooking = async (bookingId: string) => {
   const confirmed = await confirmCancel("Are you sure you want to cancel this booking?")
   if (!confirmed) return
@@ -504,6 +620,31 @@ onMounted(async () => {
   padding: 0 1rem;
 }
 
+/* Processing Overlay */
+.processing-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.processing-content {
+  text-align: center;
+  color: white;
+}
+
+.processing-content h3 {
+  font-size: 1.5rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.processing-content p {
+  color: rgba(255, 255, 255, 0.8);
+}
+
 /* Page Header */
 .page-header {
   margin-bottom: 3rem;
@@ -536,6 +677,12 @@ onMounted(async () => {
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem;
+}
+
+.spinner.large {
+  width: 3rem;
+  height: 3rem;
+  border-width: 4px;
 }
 
 @keyframes spin {

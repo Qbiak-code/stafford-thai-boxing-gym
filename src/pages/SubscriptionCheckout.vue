@@ -8,7 +8,7 @@
       </div>
 
       <!-- Loading/Error States -->
-      <div v-if="authStore.isLoading" class="status-message">
+      <div v-if="isLoading" class="status-message">
         <div class="spinner"></div>
         <p>Loading membership plans...</p>
       </div>
@@ -23,16 +23,26 @@
           />
         </svg>
         <span>{{ error }}</span>
+        <button @click="loadMembershipPlans" class="btn btn-ghost btn-sm">Try again</button>
+      </div>
+
+      <!-- Processing Payment Overlay -->
+      <div v-if="isProcessingPayment" class="processing-overlay">
+        <div class="processing-content">
+          <div class="spinner large"></div>
+          <h3>Processing Payment...</h3>
+          <p>Redirecting you to secure checkout</p>
+        </div>
       </div>
 
       <!-- Membership Plans -->
-      <section class="plans-section" v-if="!authStore.isLoading && !error">
+      <section class="plans-section" v-if="!isLoading && !error">
         <div class="membership-plans-grid">
           <div
             class="plan-card"
             v-for="plan in membershipPlans"
             :key="plan.id"
-            :class="{ selected: selectedPlan?.id === plan.id }"
+            :class="{ processing: isProcessingPayment && selectedPlan?.id === plan.id }"
           >
             <div class="plan-header">
               <h3>{{ plan.name }}</h3>
@@ -62,52 +72,82 @@
             <button
               class="btn btn-primary plan-select-btn"
               @click="selectPlan(plan)"
-              :disabled="selectedPlan?.id === plan.id"
+              :disabled="isProcessingPayment"
             >
-              {{ selectedPlan?.id === plan.id ? "Selected" : "Choose Plan" }}
+              {{
+                isProcessingPayment && selectedPlan?.id === plan.id
+                  ? "Processing..."
+                  : "Choose Plan"
+              }}
             </button>
           </div>
         </div>
-      </section>
 
-      <!-- Payment Section -->
-      <section class="payment-section" v-if="selectedPlan">
-        <div class="payment-card">
-          <div class="card-header">
-            <h2>Complete Your Payment</h2>
-          </div>
-
-          <div class="selected-plan-summary">
-            <div class="summary-content">
-              <h3>{{ selectedPlan.name }}</h3>
-              <p class="summary-price">
-                £{{ (selectedPlan.price_monthly / 100).toFixed(2) }}/month
-              </p>
-              <p class="summary-description" v-if="selectedPlan.description">
-                {{ selectedPlan.description }}
-              </p>
+        <!-- Additional Info Section -->
+        <div class="info-section">
+          <div class="info-card">
+            <div class="info-header">
+              <h3>What's Included</h3>
             </div>
-          </div>
-
-          <div class="payment-form">
-            <div class="payment-placeholder">
-              <svg class="payment-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                />
-              </svg>
-              <p>Payment integration with Stripe will be implemented here.</p>
-              <p class="payment-note">
-                Selected plan: <strong>{{ selectedPlan.name }}</strong>
-              </p>
-            </div>
-
-            <div class="payment-actions">
-              <button class="btn btn-ghost" @click="clearSelection">Choose Different Plan</button>
-              <button class="btn btn-primary" disabled>Continue to Payment</button>
+            <div class="info-content">
+              <div class="info-grid">
+                <div class="info-item">
+                  <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <div>
+                    <h4>Secure Payment</h4>
+                    <p>Powered by Stripe with bank-level security</p>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
+                  </svg>
+                  <div>
+                    <h4>Cancel Anytime</h4>
+                    <p>No long-term contracts or cancellation fees</p>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                    />
+                  </svg>
+                  <div>
+                    <h4>Monthly Billing</h4>
+                    <p>Automatic monthly payments, manage anytime</p>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 110 19.5 9.75 9.75 0 010-19.5z"
+                    />
+                  </svg>
+                  <div>
+                    <h4>Full Access</h4>
+                    <p>All gym facilities and group classes included</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -138,18 +178,26 @@ import { ref, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import { useAuthStore } from "@/stores/auth"
 import { supabase } from "@/lib/supabase"
+import { stripeService } from "@/services/stripe"
+import { useModal } from "@/composables/useModal"
 import type { SubscriptionPlan } from "@/types"
 
 const authStore = useAuthStore()
 const router = useRouter()
+const { alert } = useModal()
 
 // State
 const membershipPlans = ref<SubscriptionPlan[]>([])
 const selectedPlan = ref<SubscriptionPlan | null>(null)
 const error = ref<string | null>(null)
+const isLoading = ref(false)
+const isProcessingPayment = ref(false)
 
 // Load subscription plans from Supabase
 const loadMembershipPlans = async () => {
+  isLoading.value = true
+  error.value = null
+
   try {
     const { data, error: plansError } = await supabase
       .from("subscription_plans")
@@ -168,17 +216,34 @@ const loadMembershipPlans = async () => {
     const errorMessage = err instanceof Error ? err.message : "Failed to load membership plans"
     error.value = errorMessage
     console.error("Load plans error:", err)
+  } finally {
+    isLoading.value = false
   }
 }
 
-// Select a plan
-const selectPlan = (plan: SubscriptionPlan) => {
+// Select a plan and start checkout
+const selectPlan = async (plan: SubscriptionPlan) => {
+  if (isProcessingPayment.value) return
+
   selectedPlan.value = plan
+  await startCheckout(plan)
 }
 
-// Clear selection
-const clearSelection = () => {
-  selectedPlan.value = null
+// Start Stripe checkout process
+const startCheckout = async (plan: SubscriptionPlan) => {
+  isProcessingPayment.value = true
+  error.value = null
+
+  try {
+    await stripeService.createSubscription(plan.id)
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "Payment failed"
+    error.value = errorMessage
+    await alert(errorMessage, "Payment Error")
+    selectedPlan.value = null
+  } finally {
+    isProcessingPayment.value = false
+  }
 }
 
 // Initialize component
@@ -198,6 +263,7 @@ onMounted(async () => {
   min-height: 100vh;
   background-color: var(--bg-primary);
   padding: 2rem 0;
+  position: relative;
 }
 
 .container {
@@ -224,6 +290,31 @@ onMounted(async () => {
   color: var(--text-secondary);
 }
 
+/* Processing Overlay */
+.processing-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.processing-content {
+  text-align: center;
+  color: white;
+}
+
+.processing-content h3 {
+  font-size: 1.5rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.processing-content p {
+  color: rgba(255, 255, 255, 0.8);
+}
+
 /* Status Messages */
 .status-message {
   display: flex;
@@ -243,6 +334,12 @@ onMounted(async () => {
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
+}
+
+.spinner.large {
+  width: 3rem;
+  height: 3rem;
+  border-width: 4px;
 }
 
 @keyframes spin {
@@ -266,6 +363,7 @@ onMounted(async () => {
   color: var(--accent-red);
   margin: 0 auto 2rem;
   max-width: 600px;
+  flex-wrap: wrap;
 }
 
 .error-icon {
@@ -283,7 +381,7 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 4rem;
 }
 
 .plan-card {
@@ -303,12 +401,12 @@ onMounted(async () => {
   border-color: var(--accent-gold);
 }
 
-.plan-card.selected {
-  border-color: var(--accent-gold);
-  background-color: var(--bg-tertiary);
+.plan-card.processing {
+  opacity: 0.7;
+  transform: scale(0.98);
 }
 
-.plan-card.selected::before {
+.plan-card::before {
   content: "";
   position: absolute;
   top: 0;
@@ -316,6 +414,12 @@ onMounted(async () => {
   right: 0;
   height: 4px;
   background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.plan-card:hover::before {
+  opacity: 1;
 }
 
 .plan-header h3 {
@@ -371,29 +475,34 @@ onMounted(async () => {
 .plan-select-btn {
   width: 100%;
   margin-top: 1.5rem;
-}
-
-/* Payment Section */
-.payment-section {
-  margin-top: 3rem;
-}
-
-.payment-card {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 1rem;
-  max-width: 600px;
-  margin: 0 auto;
+  position: relative;
   overflow: hidden;
 }
 
-.card-header {
+.plan-select-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Info Section */
+.info-section {
+  margin-top: 4rem;
+}
+
+.info-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.info-header {
   background-color: var(--bg-tertiary);
   padding: 1.5rem 2rem;
   border-bottom: 1px solid var(--border-color);
 }
 
-.card-header h2 {
+.info-header h3 {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -401,68 +510,48 @@ onMounted(async () => {
   text-align: center;
 }
 
-.selected-plan-summary {
-  padding: 2rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.summary-content {
-  text-align: center;
-}
-
-.summary-content h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--accent-gold);
-  margin-bottom: 0.5rem;
-}
-
-.summary-price {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-}
-
-.summary-description {
-  color: var(--text-secondary);
-  font-style: italic;
-}
-
-.payment-form {
+.info-content {
   padding: 2rem;
 }
 
-.payment-placeholder {
-  text-align: center;
-  padding: 2rem;
-  background-color: var(--bg-primary);
-  border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
 }
 
-.payment-icon {
-  width: 3rem;
-  height: 3rem;
-  color: var(--text-secondary);
-  margin: 0 auto 1rem;
+@media (min-width: 768px) {
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.payment-placeholder p {
-  color: var(--text-secondary);
-  margin-bottom: 0.5rem;
-}
-
-.payment-note {
-  color: var(--text-primary);
-  font-size: 0.875rem;
-}
-
-.payment-actions {
+.info-item {
   display: flex;
+  align-items: flex-start;
   gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
+}
+
+.info-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--accent-gold);
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.info-item h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.info-item p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
 }
 
 /* Auth Required */
@@ -550,12 +639,13 @@ onMounted(async () => {
   border-color: var(--text-secondary);
 }
 
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
-  .payment-actions {
-    flex-direction: column;
-  }
-
   .membership-plans-grid {
     grid-template-columns: 1fr;
   }
@@ -564,8 +654,8 @@ onMounted(async () => {
     padding: 1.5rem;
   }
 
-  .payment-card {
-    margin: 0 1rem;
+  .info-content {
+    padding: 1.5rem;
   }
 }
 </style>

@@ -252,29 +252,93 @@ export const subscriptionsAPI = {
     }
   },
 
-  async createPaymentIntent(planId: string): Promise<ApiResponse<{ clientSecret: string }>> {
+  async createCheckoutSession(planId: string): Promise<ApiResponse<{ sessionId: string; url: string }>> {
     try {
-      // This will need to call a Supabase Edge Function for Stripe integration
-      // For now, return a mock response
-      console.log("Creating payment intent for plan:", planId)
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session?.access_token) {
+        throw new Error('User not authenticated')
+      }
+
+      const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`
+
+      console.log('🔗 Calling Edge Function:', functionUrl)
+      console.log('🔑 Has auth token:', !!session.access_token)
+      console.log('📦 Plan ID:', planId)
+
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          planId,
+          returnUrl: window.location.origin + '/member/dashboard'
+        }),
+      })
+
+      console.log('📡 Response status:', response.status)
+      console.log('📡 Response ok:', response.ok)
+
+      if (!response.ok) {
+        console.error('❌ Response not ok:', response.status, response.statusText)
+        const errorText = await response.text()
+        console.error('❌ Error response body:', errorText)
+        throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`)
+      }
+
+      const data = await response.json()
+      console.log('✅ Success response:', data)
+
       return {
         success: true,
-        data: { clientSecret: "mock_client_secret" },
+        data
       }
     } catch (error) {
+      console.error('💥 API Error:', error)
       return {
         success: false,
-        error: handleError(error),
+        error: handleError(error)
       }
     }
   },
 
-  async confirmSubscription(paymentIntentId: string): Promise<ApiResponse<null>> {
+  async getCustomerPortalUrl(): Promise<ApiResponse<{ url: string }>> {
     try {
-      // This will need to call a Supabase Edge Function for Stripe integration
-      // For now, return success
-      console.log("Confirming subscription for payment intent:", paymentIntentId)
-      return { success: true }
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session?.access_token) {
+        throw new Error('User not authenticated')
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/customer-portal`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          returnUrl: window.location.origin + '/member/dashboard'
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+
+        // Handle specific error codes
+        if (errorData.code === 'NO_SUBSCRIPTION') {
+          throw new Error('You need an active subscription to access the customer portal. Please subscribe first.')
+        }
+
+        throw new Error(errorData.error || 'Failed to create customer portal session')
+      }
+
+      const data = await response.json()
+      return {
+        success: true,
+        data
+      }
     } catch (error) {
       return {
         success: false,
