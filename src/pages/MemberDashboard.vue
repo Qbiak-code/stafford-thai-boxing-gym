@@ -935,18 +935,50 @@ onMounted(async () => {
 }
 
 .subscription-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   padding-top: 1rem;
   border-top: 1px solid var(--border-color);
 }
 
+@media (min-width: 480px) {
+  .subscription-actions {
+    flex-direction: row;
+    gap: 1rem;
+  }
+}
+
 .no-subscription {
   text-align: center;
-  padding: 1rem 0;
+  padding: 2rem 1rem;
+}
+
+.no-subscription-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.no-subscription-icon {
+  width: 3rem;
+  height: 3rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.no-subscription h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
 }
 
 .no-subscription p {
   color: var(--text-secondary);
-  margin-bottom: 1rem;
+  margin: 0;
+  font-size: 0.875rem;
 }
 
 /* Bookings List */

@@ -25,11 +25,8 @@ export function usePaymentSuccess() {
         'Welcome to Stafford Thai Boxing!'
       )
 
-      // Clean up URL
-      router.replace({ query: {} })
-
-      // Refresh the page to load updated subscription data
-      window.location.reload()
+      // Clean up URL and redirect to member dashboard
+      await router.replace('/member/dashboard')
 
     } catch (error) {
       console.error('Payment success handling failed:', error)
@@ -37,6 +34,9 @@ export function usePaymentSuccess() {
         'Payment was successful, but there was an issue updating your account. Please contact support if you don\'t see your subscription activated.',
         'Payment Processed'
       )
+
+      // Still redirect to dashboard even if there's an error
+      await router.replace('/member/dashboard')
     } finally {
       isProcessingSuccess.value = false
     }

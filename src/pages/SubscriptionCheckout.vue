@@ -393,6 +393,9 @@ onMounted(async () => {
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .plan-card:hover {
@@ -448,6 +451,7 @@ onMounted(async () => {
   margin-bottom: 1.5rem;
   font-style: italic;
   line-height: 1.5;
+  flex-grow: 0;
 }
 
 .plan-features {
@@ -455,6 +459,7 @@ onMounted(async () => {
   padding: 0;
   margin: 1.5rem 0;
   text-align: left;
+  flex-grow: 1;
 }
 
 .plan-features li {
@@ -474,7 +479,7 @@ onMounted(async () => {
 
 .plan-select-btn {
   width: 100%;
-  margin-top: 1.5rem;
+  margin-top: auto;
   position: relative;
   overflow: hidden;
 }
