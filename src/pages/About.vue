@@ -290,7 +290,7 @@ const coaches = [
 .stat-number {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
   display: block;
   margin-bottom: 0.25rem;
 }
@@ -395,7 +395,7 @@ const coaches = [
 }
 
 .coach-title {
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
   font-weight: 500;
   margin-bottom: 1rem;
 }
@@ -467,7 +467,7 @@ const coaches = [
 .value-icon {
   width: 3rem;
   height: 3rem;
-  background-color: var(--accent-gold);
+  background-color: var(--accent-khaki);
   border-radius: 0.75rem;
   display: flex;
   align-items: center;

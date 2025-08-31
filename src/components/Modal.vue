@@ -188,7 +188,7 @@ onUnmounted(() => {
 }
 
 .modal-variant-primary {
-  border-top: 4px solid var(--accent-gold);
+  border-top: 4px solid var(--accent-khaki);
 }
 
 /* Modal Header */
@@ -265,7 +265,7 @@ onUnmounted(() => {
 }
 
 .icon-primary {
-  background-color: var(--accent-gold);
+  background-color: var(--accent-khaki);
   color: var(--bg-primary);
 }
 

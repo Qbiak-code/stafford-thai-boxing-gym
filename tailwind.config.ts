@@ -32,16 +32,19 @@ export default {
           900: '#7f1d1d',
           950: '#450a0a',
         },
-        // Add our custom toned-down colors
-        'firebrick': {
-          500: '#B22222',
-          600: '#8B1A1A',
-          700: '#722020',
+        // Add our custom khaki-black colors
+        'khaki': {
+          300: '#d4d194', // Light khaki
+          400: '#bdb76b', // Standard khaki
+          500: '#8b8243', // Dark khaki
+          600: '#5d5729', // Very dark khaki
+          700: '#4a4520', // Darkest khaki
         },
-        'goldenrod': {
-          400: '#DAA520',
-          500: '#B8860B',
-          600: '#996F00',
+        'deep-black': {
+          400: '#3d3d3d',
+          500: '#2d2d2d',
+          600: '#1a1a1a',
+          700: '#0d0d0d',
         }
       },
       fontFamily: {

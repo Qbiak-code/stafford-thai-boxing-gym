@@ -19,6 +19,13 @@
       <!-- Hero Content -->
       <div class="relative z-20 flex items-center justify-center h-full">
         <div class="container mx-auto px-6 text-center">
+          <div class="hero-logo-container">
+            <img
+              :src="isDark ? 'https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images/dark-logo.png' : 'https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images/light-logo.png'"
+              alt="Stafford Thaiboxing Gym Logo"
+              class="hero-logo"
+            />
+          </div>
           <h1
             ref="headline"
             class="text-5xl md:text-7xl lg:text-8xl font-display font-bold mb-6 text-white drop-shadow-2xl"
@@ -34,7 +41,7 @@
           <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <router-link
               to="/timetable"
-              class="group inline-flex items-center px-8 py-4 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold text-lg rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl btn-glow transform hover:scale-105"
+              class="btn btn-primary group inline-flex items-center px-8 py-4 text-white font-semibold text-lg rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl btn-glow transform hover:scale-105"
             >
               <span>View Timetable</span>
               <svg
@@ -54,7 +61,7 @@
 
             <router-link
               to="/contact"
-              class="group inline-flex items-center px-8 py-4 bg-red-700 hover:bg-red-800 text-white font-semibold text-lg rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              class="btn btn-secondary group inline-flex items-center px-8 py-4 text-white font-semibold text-lg rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               <span>Start Training</span>
               <svg
@@ -95,9 +102,9 @@
             </p>
 
             <p class="supporting-text">
-              We focus on <span class="text-red">technique</span>,
+              We focus on <span class="text-secondary">technique</span>,
               <span class="text-gold">conditioning</span>, and
-              <span class="text-red">mental discipline</span> to help you achieve your goals.
+              <span class="text-secondary">mental discipline</span> to help you achieve your goals.
             </p>
 
             <!-- Feature highlights -->
@@ -245,7 +252,10 @@
 import { ref, onMounted } from "vue"
 import { gsap } from "gsap"
 import { useAuthStore } from "@/stores/auth"
+import { useDarkMode } from "@/composables/useDarkMode"
+
 const authStore = useAuthStore()
+const { isDark } = useDarkMode()
 
 const headline = ref<HTMLElement | null>(null)
 
@@ -293,6 +303,42 @@ onMounted(() => {
   gap: 2rem;
 }
 
+/* Hero Logo */
+.hero-logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.hero-logo {
+  width: 15rem;
+  height: 15rem;
+  object-fit: contain;
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+  opacity: 0.9;
+}
+
+.hero-logo:hover {
+  transform: scale(1.05);
+  opacity: 1;
+}
+
+/* Responsive hero logo sizing */
+@media (max-width: 640px) {
+  .hero-logo {
+    width: 10rem;
+    height: 10rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-logo {
+    width: 20rem;
+    height: 20rem;
+  }
+}
+
 .section-title {
   font-size: clamp(2rem, 6vw, 3.5rem);
   font-weight: 700;
@@ -313,12 +359,17 @@ onMounted(() => {
 }
 
 .text-gold {
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
   font-weight: 600;
 }
 
 .text-red {
-  color: var(--accent-red);
+  color: var(--accent-dark-khaki);
+  font-weight: 600;
+}
+
+.text-secondary {
+  color: var(--text-secondary);
   font-weight: 600;
 }
 
@@ -351,7 +402,7 @@ onMounted(() => {
 }
 
 .feature-primary:hover {
-  border-color: var(--accent-gold);
+  border-color: var(--accent-khaki);
 }
 
 .feature-secondary:hover {
@@ -375,7 +426,7 @@ onMounted(() => {
 }
 
 .feature-primary .feature-icon {
-  background-color: var(--accent-gold);
+  background-color: var(--accent-khaki);
   color: var(--bg-primary);
 }
 
@@ -522,7 +573,7 @@ onMounted(() => {
 .list-bullet {
   width: 0.5rem;
   height: 0.5rem;
-  background-color: var(--accent-gold);
+  background-color: var(--accent-khaki);
   border-radius: 50%;
   margin-top: 0.5rem;
   margin-right: 0.75rem;

@@ -4,7 +4,11 @@
       <div class="footer-content">
         <!-- Logo/Brand -->
         <div class="footer-brand">
-          <img src="/logo.png" alt="Logo" class="footer-logo" />
+          <img
+            :src="isDark ? 'https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images/dark-logo.png' : 'https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images/light-logo.png'"
+            alt="Logo"
+            class="footer-logo"
+          />
         </div>
 
         <!-- Main Content -->
@@ -52,7 +56,10 @@
 </template>
 
 <script setup lang="ts">
-import WhatsAppButton from './WhatsAppButton.vue'
+import WhatsAppButton from "./WhatsAppButton.vue"
+import { useDarkMode } from "@/composables/useDarkMode"
+
+const { isDark } = useDarkMode()
 </script>
 
 <style scoped>
@@ -134,17 +141,17 @@ import WhatsAppButton from './WhatsAppButton.vue'
 
 /* Brand-specific hover colors */
 .facebook-link:hover {
-  color: #1877F2;
+  color: #1877f2;
   background-color: rgba(24, 119, 242, 0.1);
 }
 
 .instagram-link:hover {
-  color: #E4405F;
+  color: #e4405f;
   background-color: rgba(228, 64, 95, 0.1);
 }
 
 .youtube-link:hover {
-  color: #FF0000;
+  color: #ff0000;
   background-color: rgba(255, 0, 0, 0.1);
 }
 

@@ -511,7 +511,7 @@ onUnmounted(() => {
   width: 2rem;
   height: 2rem;
   border: 3px solid var(--border-color);
-  border-top: 3px solid var(--accent-gold);
+  border-top: 3px solid var(--accent-khaki);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem;
@@ -627,13 +627,13 @@ onUnmounted(() => {
 .filter-btn:hover {
   background-color: var(--hover-bg);
   color: var(--text-primary);
-  border-color: var(--accent-gold);
+  border-color: var(--accent-khaki);
 }
 
 .filter-btn.active {
-  background-color: var(--accent-gold);
+  background-color: var(--accent-khaki);
   color: var(--bg-primary);
-  border-color: var(--accent-gold);
+  border-color: var(--accent-khaki);
 }
 
 .filter-count {
@@ -713,7 +713,7 @@ onUnmounted(() => {
   position: absolute;
   top: 0.75rem;
   left: 0.75rem;
-  background-color: var(--accent-gold);
+  background-color: var(--accent-khaki);
   color: var(--bg-primary);
   padding: 0.375rem 0.75rem;
   border-radius: 1rem;
@@ -855,7 +855,7 @@ onUnmounted(() => {
 }
 
 .modal-close:hover {
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
 }
 
 .modal-image {
@@ -885,7 +885,7 @@ onUnmounted(() => {
 .modal-category {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  background-color: var(--accent-gold);
+  background-color: var(--accent-khaki);
   color: var(--bg-primary);
   border-radius: 1rem;
   font-size: 0.75rem;

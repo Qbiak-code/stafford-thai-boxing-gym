@@ -330,7 +330,7 @@ onMounted(async () => {
   width: 2rem;
   height: 2rem;
   border: 3px solid var(--border-color);
-  border-top: 3px solid var(--accent-gold);
+  border-top: 3px solid var(--accent-khaki);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -401,7 +401,7 @@ onMounted(async () => {
 .plan-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-medium);
-  border-color: var(--accent-gold);
+  border-color: var(--accent-khaki);
 }
 
 .plan-card.processing {
@@ -428,7 +428,7 @@ onMounted(async () => {
 .plan-header h3 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
   margin-bottom: 1rem;
 }
 
@@ -473,7 +473,7 @@ onMounted(async () => {
 .feature-icon {
   width: 1rem;
   height: 1rem;
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
   flex-shrink: 0;
 }
 
@@ -540,7 +540,7 @@ onMounted(async () => {
 .info-icon {
   width: 1.5rem;
   height: 1.5rem;
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
   flex-shrink: 0;
   margin-top: 0.25rem;
 }
@@ -576,7 +576,7 @@ onMounted(async () => {
 .auth-icon {
   width: 3rem;
   height: 3rem;
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
   margin: 0 auto 1rem;
 }
 
@@ -623,9 +623,9 @@ onMounted(async () => {
 }
 
 .btn-primary {
-  background: var(--accent-gold);
+  background: var(--accent-khaki);
   color: var(--bg-primary);
-  border-color: var(--accent-gold);
+  border-color: var(--accent-khaki);
 }
 
 .btn-primary:hover:not(:disabled) {

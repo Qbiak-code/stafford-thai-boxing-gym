@@ -420,7 +420,7 @@ const handleSubmit = async () => {
 .form-input:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: var(--accent-gold);
+  border-color: var(--accent-khaki);
   box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.1);
 }
 
@@ -478,7 +478,7 @@ const handleSubmit = async () => {
 .contact-icon {
   width: 2.5rem;
   height: 2.5rem;
-  background-color: var(--accent-gold);
+  background-color: var(--accent-khaki);
   border-radius: 0.75rem;
   display: flex;
   align-items: center;

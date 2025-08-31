@@ -673,7 +673,7 @@ onMounted(async () => {
   width: 2.5rem;
   height: 2.5rem;
   border: 3px solid var(--border-color);
-  border-top: 3px solid var(--accent-gold);
+  border-top: 3px solid var(--accent-khaki);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem;
@@ -762,7 +762,7 @@ onMounted(async () => {
 }
 
 .membership-card .stat-icon {
-  background-color: var(--accent-gold);
+  background-color: var(--accent-khaki);
   color: var(--bg-primary);
 }
 
@@ -845,7 +845,7 @@ onMounted(async () => {
 }
 
 .header-link {
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
   text-decoration: none;
   font-size: 0.875rem;
   font-weight: 500;
@@ -903,7 +903,7 @@ onMounted(async () => {
 
 .form-input:focus {
   outline: none;
-  border-color: var(--accent-gold);
+  border-color: var(--accent-khaki);
   box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.1);
 }
 
@@ -924,7 +924,7 @@ onMounted(async () => {
 .price {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
   margin: 0;
 }
 
@@ -1000,7 +1000,7 @@ onMounted(async () => {
 }
 
 .booking-item:hover {
-  border-color: var(--accent-gold);
+  border-color: var(--accent-khaki);
 }
 
 .booking-info h4 {
@@ -1018,7 +1018,7 @@ onMounted(async () => {
 
 .booking-instructor {
   font-size: 0.75rem;
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
   margin: 0;
 }
 
@@ -1030,7 +1030,7 @@ onMounted(async () => {
 
 .status-badge {
   padding: 0.25rem 0.75rem;
-  background-color: var(--accent-gold);
+  background-color: var(--accent-khaki);
   color: var(--bg-primary);
   border-radius: 1rem;
   font-size: 0.75rem;
@@ -1122,7 +1122,7 @@ onMounted(async () => {
 }
 
 .action-icon-primary {
-  background-color: var(--accent-gold);
+  background-color: var(--accent-khaki);
   color: var(--bg-primary);
 }
 
@@ -1159,7 +1159,7 @@ onMounted(async () => {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  background-color: var(--accent-gold);
+  background-color: var(--accent-khaki);
   color: var(--bg-primary);
   padding: 1rem 1.5rem;
   border-radius: 0.75rem;

@@ -278,7 +278,7 @@ const getLevelClass = (level: string) => {
   display: block;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
   margin-bottom: 0.25rem;
 }
 
@@ -389,7 +389,7 @@ const getLevelClass = (level: string) => {
 }
 
 .level-intermediate {
-  background-color: var(--accent-gold);
+  background-color: var(--accent-khaki);
   color: var(--bg-primary);
 }
 
@@ -451,7 +451,7 @@ const getLevelClass = (level: string) => {
 .detail-icon svg {
   width: 1rem;
   height: 1rem;
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
 }
 
 .detail-info {

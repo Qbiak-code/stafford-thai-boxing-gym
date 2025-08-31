@@ -3,6 +3,11 @@
     <div class="container">
       <!-- Logo/Brand -->
       <router-link to="/" class="brand">
+        <img
+          :src="isDark ? 'https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images/dark-logo.png' : 'https://krxsrstmcllvrbwlulmk.supabase.co/storage/v1/object/public/gallery-images/light-logo.png'"
+          alt="Muay Thai Training"
+          class="brand-logo"
+        />
         <h1 class="brand-text">
           <span class="inline md:hidden">Stafford Thaiboxing Gym</span>
           <span class="hidden md:inline lg:hidden">ST</span>
@@ -192,8 +197,23 @@ const closeMobileMenu = () => {
 
 /* Brand */
 .brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   text-decoration: none;
   color: var(--text-primary);
+}
+
+.brand-logo {
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: contain;
+  border-radius: 0.375rem;
+  transition: transform 0.2s ease;
+}
+
+.brand-logo:hover {
+  transform: scale(1.05);
 }
 
 .brand-text {
@@ -204,6 +224,23 @@ const closeMobileMenu = () => {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  line-height: 1;
+}
+
+/* Responsive logo sizing */
+@media (max-width: 640px) {
+  .brand-logo {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .brand {
+    gap: 0.5rem;
+  }
+
+  .brand-text {
+    font-size: 1.125rem;
+  }
 }
 
 /* Desktop Navigation */

@@ -340,7 +340,7 @@ watch(
 }
 
 .tab-button.active {
-  background-color: var(--accent-gold);
+  background-color: var(--accent-khaki);
   color: var(--bg-primary);
 }
 
@@ -383,7 +383,7 @@ watch(
 
 .form-input:focus {
   outline: none;
-  border-color: var(--accent-gold);
+  border-color: var(--accent-khaki);
   box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.1);
 }
 
@@ -423,7 +423,7 @@ watch(
 .confirmation-icon {
   width: 4rem;
   height: 4rem;
-  background-color: var(--accent-gold);
+  background-color: var(--accent-khaki);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -451,7 +451,7 @@ watch(
 }
 
 .email-highlight {
-  color: var(--accent-gold) !important;
+  color: var(--accent-khaki) !important;
   font-weight: 600;
   font-size: 1.1em;
 }
@@ -490,7 +490,7 @@ watch(
   width: 2.5rem;
   height: 2.5rem;
   border: 3px solid var(--border-color);
-  border-top: 3px solid var(--accent-gold);
+  border-top: 3px solid var(--accent-khaki);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }

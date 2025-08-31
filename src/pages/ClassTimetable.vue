@@ -706,7 +706,7 @@ h1 {
   width: 2rem;
   height: 2rem;
   border: 3px solid var(--border-color);
-  border-top: 3px solid var(--accent-gold);
+  border-top: 3px solid var(--accent-khaki);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem;
@@ -764,7 +764,7 @@ h1 {
 .filter-dropdown:hover {
   background-color: var(--hover-bg);
   color: var(--text-primary);
-  border-color: var(--accent-gold);
+  border-color: var(--accent-khaki);
 }
 
 /* Timetable Layout */
@@ -863,7 +863,7 @@ h1 {
   padding: 0.75rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  border-left: 3px solid var(--accent-gold);
+  border-left: 3px solid var(--accent-khaki);
 }
 
 .class-card:hover {
@@ -893,7 +893,7 @@ h1 {
 
 .class-instructor {
   font-size: 0.75rem;
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
   margin: 0;
   line-height: 1.3;
 }
@@ -910,7 +910,7 @@ h1 {
   align-items: center;
   gap: 0.25rem;
   font-size: 0.625rem;
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
   font-weight: 500;
 }
 
@@ -979,7 +979,7 @@ h1 {
 .stat-number {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
   margin: 0;
 }
 
@@ -1136,12 +1136,12 @@ h1 {
 }
 
 .class-option:hover {
-  border-color: var(--accent-gold);
+  border-color: var(--accent-khaki);
   box-shadow: var(--shadow-subtle);
 }
 
 .class-option.selected {
-  border-color: var(--accent-gold);
+  border-color: var(--accent-khaki);
   background-color: var(--bg-tertiary);
 }
 
@@ -1171,7 +1171,7 @@ h1 {
 }
 
 .class-option-info .instructor {
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
   margin: 0;
 }
 
@@ -1180,7 +1180,7 @@ h1 {
   align-items: center;
   gap: 0.25rem;
   margin-top: 0.25rem;
-  color: var(--accent-gold);
+  color: var(--accent-khaki);
   font-size: 0.625rem;
   font-weight: 500;
 }
@@ -1201,7 +1201,7 @@ h1 {
 }
 
 .radio-button.selected {
-  border-color: var(--accent-gold);
+  border-color: var(--accent-khaki);
 }
 
 .radio-button.selected::after {
@@ -1212,7 +1212,7 @@ h1 {
   transform: translate(-50%, -50%);
   width: 0.5rem;
   height: 0.5rem;
-  background-color: var(--accent-gold);
+  background-color: var(--accent-khaki);
   border-radius: 50%;
 }
 
